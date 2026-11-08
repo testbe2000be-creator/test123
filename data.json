@@ -1,9 +1,0 @@
-{
- "meta": {"updated": "範例", "data_date": "2026-01-01", "scanned": 4, "passed": 4, "sample": true},
- "stocks": [
-  {"code":"2330","name":"台積電","industry":"半導體","close":1050,"ma60":980,"bias":7.1,"yoy":[22.0,24.5,25.1,29.0,31.3,28.6],"yoy_avg":26.8,"avg_vol":45200,"buy5":24,"buy5_prev":10,"quadrant":1,"pe":24.5,"yield":1.5},
-  {"code":"2454","name":"聯發科","industry":"半導體","close":1280,"ma60":1200,"bias":6.7,"yoy":[8.0,10.2,12.0,15.1,18.5,27.4],"yoy_avg":15.2,"avg_vol":12100,"buy5":5,"buy5_prev":8,"quadrant":2,"pe":18.2,"yield":3.2},
-  {"code":"3231","name":"緯創","industry":"電腦及週邊","close":118,"ma60":110,"bias":7.3,"yoy":[5.0,7.5,9.0,11.0,14.2,21.7],"yoy_avg":11.4,"avg_vol":31000,"buy5":-3,"buy5_prev":-6,"quadrant":3,"pe":16.5,"yield":3.8},
-  {"code":"3017","name":"奇鋐","industry":"電子零組件","close":680,"ma60":520,"bias":30.8,"yoy":[40.0,45.0,50.2,55.0,61.6,81.8],"yoy_avg":55.6,"avg_vol":9400,"buy5":9,"buy5_prev":4,"quadrant":1,"pe":32.4,"yield":1.8}
- ]
-}

@@ -3,291 +3,179 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="台股強勢股篩選：營收、季線、量能、法人籌碼一覽（僅供參考）">
-<title>台股強勢股篩選與法人資金流向儀表板</title>
+<meta name="description" content="台股強勢股選股參考：營收、季線、量能、法人籌碼，白話解讀與風險提醒（僅供參考）">
+<title>台股強勢股選股參考｜白話解讀與法人籌碼</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-12">
-
 <header class="bg-slate-800 border-b border-slate-700 shadow-md">
   <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center gap-3">
     <div>
-      <h1 class="text-2xl font-bold">📈 台股強勢股與法人籌碼儀表板 <span class="text-sm font-normal text-emerald-400">新手版</span></h1>
-      <p class="text-slate-400 text-sm mt-1">營收近6月至少5月年增為正 ｜ 股價站上季線(MA60) ｜ 日均量 ≥ 500張 ｜ 附風險提醒</p>
+      <h1 class="text-2xl font-bold">📈 台股強勢股選股參考</h1>
+      <p class="text-slate-400 text-sm mt-1">營收持續成長 ｜ 股價站上季線(MA60) ｜ 日均量 ≥ 500張 ｜ 法人籌碼 ｜ 估值與風險提醒</p>
     </div>
     <button onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm">⬇ 匯出 CSV</button>
   </div>
 </header>
 
 <main class="max-w-7xl mx-auto px-4 py-8 space-y-6">
+  <div class="bg-amber-950/40 border border-amber-700/60 rounded-xl p-4 text-sm text-amber-200"><b>⚠ 風險聲明：</b>本頁僅供參考，不構成投資建議。入選不代表會漲，投資前請自行判斷並承擔風險。</div>
+  <div id="status" class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm">載入中…</div>
 
-  <div class="bg-amber-950/40 border border-amber-700/60 rounded-xl p-4 text-sm text-amber-200">
-    <b>⚠ 風險聲明：</b>本頁僅供參考，不構成投資建議，資料也可能有誤差。「入選」不代表會漲，請自行判斷並承擔風險。
-  </div>
-  <div id="status" class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm">載入資料中…</div>
-
-  <!-- 新手三步驟 -->
   <section class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-    <h2 class="text-lg font-bold mb-3">🧭 新手三步驟：這張表怎麼看？</h2>
-    <div class="grid md:grid-cols-3 gap-3 text-sm">
-      <div class="bg-slate-700/50 p-4 rounded-xl"><b class="text-emerald-300">① 先看有沒有警示</b><p class="text-slate-300 text-xs mt-1 leading-relaxed">表格最右邊的「風險提醒」會列出追高、估值偏高、法人賣超等狀況。警示越多，越需要小心。沒有警示也不等於安全。</p></div>
-      <div class="bg-slate-700/50 p-4 rounded-xl"><b class="text-emerald-300">② 再看資金方向</b><p class="text-slate-300 text-xs mt-1 leading-relaxed">籌碼象限看大戶資金是在進場還是撤退。第一象限最積極，第四象限代表法人加速賣出。</p></div>
-      <div class="bg-slate-700/50 p-4 rounded-xl"><b class="text-emerald-300">③ 最後看價格合不合理</b><p class="text-slate-300 text-xs mt-1 leading-relaxed">本益比與殖利率只是粗略參考，不同產業標準差很多。不要只因為標籤寫「相對偏低」就覺得便宜。</p></div>
+    <h2 class="text-lg font-bold mb-3">🧭 三步驟看懂每檔股票</h2>
+    <div class="grid md:grid-cols-3 gap-3 text-xs text-slate-300 leading-relaxed">
+      <div class="bg-slate-700/50 p-4 rounded-xl"><b class="text-emerald-300 text-sm">① 看「警示」</b><br>每張卡片都會列出風險：估值偏高、法人賣超、營收成長偏低等。警示越多越要小心。沒有警示也不代表安全。</div>
+      <div class="bg-slate-700/50 p-4 rounded-xl"><b class="text-emerald-300 text-sm">② 看「資金方向」</b><br>四象限看大戶資金在進場還是撤退。第一象限最積極，第四象限代表法人加速賣出。</div>
+      <div class="bg-slate-700/50 p-4 rounded-xl"><b class="text-emerald-300 text-sm">③ 看「價格合不合理」</b><br>本益比、殖利率只是粗略參考，不同產業標準差很多，請搭配同業比較。</div>
     </div>
-    <p class="text-xs text-slate-400 mt-3">配色採台股慣例：<span class="text-red-400 font-semibold">紅＝買超／成長／上漲</span>，<span class="text-emerald-400 font-semibold">綠＝賣超／衰退／下跌</span>。</p>
+    <p class="text-xs text-slate-400 mt-3">配色採台股慣例：<span class="text-red-400 font-semibold">紅＝買超／成長</span>，<span class="text-emerald-400 font-semibold">綠＝賣超／衰退</span>。</p>
   </section>
 
-  <!-- 四象限 -->
   <section class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
     <div class="mb-4 flex flex-col md:flex-row justify-between md:items-center gap-3">
-      <div>
-        <h2 class="text-lg font-bold">🧩 三大法人資金流向四象限</h2>
-        <p class="text-xs text-slate-400 mt-0.5">比較「近5日」與「前5日」的法人買賣超，判斷資金是加速還是放緩</p>
-      </div>
+      <div><h2 class="text-lg font-bold">🧩 三大法人資金流向四象限</h2><p class="text-xs text-slate-400 mt-0.5">比較「近5日」與「前5日」的法人買賣超，看資金是加速還是放緩</p></div>
       <div id="hot" class="bg-slate-700 px-3 py-1.5 rounded-lg text-xs text-slate-300"></div>
     </div>
     <div id="quads" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
   </section>
 
-  <!-- 表格 -->
-  <section class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
-    <div class="p-6 border-b border-slate-700 flex flex-col md:flex-row justify-between md:items-center gap-3">
-      <h2 class="text-lg font-bold">🔎 符合條件的強勢個股與風險提醒</h2>
-      <div id="filters" class="flex gap-1.5 flex-wrap"></div>
+  <section>
+    <div class="flex flex-col md:flex-row justify-between md:items-center gap-3 mb-4">
+      <h2 class="text-lg font-bold">🔎 符合條件個股：白話解讀</h2>
+      <div class="flex gap-2 items-center flex-wrap">
+        <div id="filters" class="flex gap-1.5 flex-wrap"></div>
+        <select id="sortSel" class="bg-slate-700 text-xs rounded-lg px-2 py-1.5 border border-slate-600">
+          <option value="yoy_avg">排序：營收成長高→低</option><option value="buy5">排序：法人買超多→少</option>
+          <option value="pe">排序：本益比低→高</option><option value="code">排序：股票代號</option></select>
+      </div>
     </div>
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse" style="min-width:1000px">
-        <thead id="thead" class="bg-slate-900 text-slate-400 text-xs border-b border-slate-700"></thead>
-        <tbody id="tbody" class="divide-y divide-slate-700 text-sm"></tbody>
-      </table>
-    </div>
-    <div class="p-4 bg-slate-900 border-t border-slate-700 text-xs text-slate-400 flex justify-between gap-2 flex-wrap">
-      <span id="rowCount"></span><span>資料來源：FinMind 開源資料（每交易日晚間更新）</span>
-    </div>
+    <div id="cards" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    <p id="rowCount" class="text-xs text-slate-400 mt-3"></p>
   </section>
 
-  <!-- 規則與名詞 -->
+  <details class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+    <summary class="p-5 cursor-pointer font-bold">📊 完整數據表（進階）</summary>
+    <div class="overflow-x-auto"><table class="w-full text-left text-sm" style="min-width:900px">
+      <thead class="bg-slate-900 text-slate-400 text-xs"><tr>
+        <th class="p-3">代號 / 名稱</th><th class="p-3 text-right">最新價</th><th class="p-3">籌碼象限</th><th class="p-3 text-right">近5日法人(億)</th><th class="p-3 text-right">本益比</th><th class="p-3 text-right">殖利率</th><th class="p-3 text-center">估值</th><th class="p-3 text-right">營收YOY均值</th><th class="p-3 text-right">日均量(張)</th></tr></thead>
+      <tbody id="tbody" class="divide-y divide-slate-700"></tbody></table></div>
+  </details>
+
   <section class="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-3">
-    <h2 class="text-lg font-bold">📖 判斷規則與名詞小教室</h2>
-    <details open class="text-sm"><summary class="cursor-pointer font-semibold text-emerald-300">篩選與判斷規則（全部公開）</summary>
+    <h2 class="text-lg font-bold">📖 判斷規則與名詞</h2>
+    <details open class="text-sm"><summary class="cursor-pointer font-semibold text-emerald-300">規則全部公開</summary>
       <ul class="list-disc pl-5 mt-2 space-y-1 text-xs text-slate-300 leading-relaxed">
-        <li><b>入選條件：</b>近6個月中至少5個月營收年增率（YOY）大於0；收盤價高於60日均線；近20日平均成交量 ≥ 500張。清單只用基本面＋技術面＋量能篩選，法人可能正在買，也可能正在賣，兩者是不同的事。</li>
-        <li><b>象限：</b>① 買超且比前5日多＝加速流入；② 買超但比前5日少＝流入放緩；③ 賣超但比前5日縮小＝流出放緩；④ 賣超且比前5日更多＝加速流出。法人金額為「買賣超股數×收盤價」的約略值。</li>
-        <li><b>估值標籤：</b>本益比 &lt;15 相對偏低；15–25 中間區；25–35 偏高；&gt;35 過熱；虧損則無本益比。門檻未區分產業，只是粗略分類。</li>
-        <li><b>風險提醒：</b>距季線 &gt;15%（追高）、本益比 &gt;25、近5日法人賣超、象限④、6個月內有營收衰退的月份。</li>
-      </ul></details>
-    <details class="text-sm"><summary class="cursor-pointer font-semibold text-emerald-300">本益比（PE）與殖利率</summary>
-      <p class="text-xs text-slate-300 mt-2 leading-relaxed">本益比＝股價 ÷ 每股盈餘，約略代表以目前獲利要幾年回本，數字越高通常代表市場期待越高、價格越貴。殖利率＝每年配息 ÷ 股價，但殖利率很高有時只是因為股價大跌。</p></details>
-    <details class="text-sm"><summary class="cursor-pointer font-semibold text-emerald-300">YOY（年增率）與季線</summary>
-      <p class="text-xs text-slate-300 mt-2 leading-relaxed">YOY 是與去年同月相比成長多少。季線（MA60）是最近60個交易日收盤價的平均，股價站上季線通常代表中期趨勢轉強，但漲離季線太遠也容易回檔。</p></details>
-    <details class="text-sm"><summary class="cursor-pointer font-semibold text-emerald-300">張、買超、賣超</summary>
-      <p class="text-xs text-slate-300 mt-2 leading-relaxed">1張＝1000股。買超代表當天買進多於賣出，賣超相反。三大法人指外資、投信、自營商。</p></details>
+        <li><b>入選條件：</b>營收年增率（YOY）持續為正、收盤價高於60日均線（季線）、日均成交量 ≥ 500張。清單只用基本面＋技術面＋量能篩選，法人可能正在買，也可能正在賣，兩者不一定同向。</li>
+        <li><b>象限：</b>① 買超且比前5日多＝加速流入；② 買超但比前5日少＝流入放緩；③ 賣超但比前5日縮小＝流出放緩；④ 賣超且比前5日更多＝加速流出。</li>
+        <li><b>估值標籤：</b>本益比 &lt;15 相對偏低；15–25 中間區；25–35 偏高；&gt;35 過熱。門檻未區分產業，僅為粗略分類。</li>
+        <li><b>警示項目：</b>距季線 &gt;15%（追高）、本益比 &gt;25、近5日法人賣超或象限④、營收年增均值 &lt;10%、近6月有營收衰退月份。</li>
+        <li><b>警示數量標籤：</b>0項＝較無警示；1項＝需留意；2項以上＝需特別小心。只是依警示數量計算，不是買賣建議。</li></ul></details>
+    <details class="text-sm"><summary class="cursor-pointer font-semibold text-emerald-300">名詞小解釋</summary>
+      <ul class="list-disc pl-5 mt-2 space-y-1 text-xs text-slate-300 leading-relaxed">
+        <li><b>本益比（PE）：</b>股價÷每股盈餘，約略代表以目前獲利要幾年回本，越高代表市場期待越高。</li>
+        <li><b>殖利率：</b>每年配息÷股價。殖利率很高有時只是因為股價大跌。</li>
+        <li><b>YOY：</b>與去年同月相比的營收成長率。</li>
+        <li><b>季線（MA60）：</b>最近60個交易日收盤價平均，站上通常代表中期趨勢轉強。</li>
+        <li><b>張／買超／賣超：</b>1張＝1000股；買超＝買進多於賣出。三大法人指外資、投信、自營商。</li></ul></details>
+  </section>
+
+  <section class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+    <div class="p-5 bg-slate-900 flex justify-between items-center cursor-pointer" onclick="toggleReport()">
+      <h2 class="text-base font-bold">🗞 產業趨勢白話解讀（編輯整理，非即時資料）</h2><span id="chev" class="text-slate-400">▼</span></div>
+    <div id="report" class="hidden p-6 space-y-4 text-xs text-slate-300 leading-relaxed">
+      <p class="text-amber-300">以下為編輯整理的背景說明，未附日期與出處，也不是法人官方意見，請自行查證。</p>
+      <div class="bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-xl"><b class="text-emerald-300 text-sm">這波趨勢影響哪些族群？</b><br>主要是「AI 伺服器供應鏈」與「先進半導體／高效能運算」：為全球科技大廠打造 AI 晶片、組裝伺服器、提供散熱與電源方案的公司。</div>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="bg-slate-700/50 p-4 rounded-xl"><b class="text-white">主要廠商</b><ul class="list-disc pl-5 mt-1 space-y-1"><li>晶圓代工與 IC 設計：台積電 (2330)、聯發科 (2454)、創意 (3443)</li><li>AI 伺服器代工：廣達 (2382)、緯創 (3231)、緯穎 (6669)</li><li>電源與散熱：台達電 (2308)、奇鋐 (3017)</li></ul></div>
+        <div class="bg-slate-700/50 p-4 rounded-xl"><b class="text-white">為什麼看營收與季線？</b><p class="mt-1">營收年增代表訂單有實際開出來，比單純題材可靠；股價站上季線代表中期跌勢可能已止穩。但兩者都是「過去」的資料，不保證未來。</p></div>
+        <div class="bg-slate-700/50 p-4 rounded-xl"><b class="text-white">其他相關族群</b><ul class="list-disc pl-5 mt-1 space-y-1"><li>重電綠能：華城 (1519)、士電 (1503)</li></ul></div>
+        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700"><b class="text-emerald-400">摘要</b><p class="mt-1">名單由「營收成長＋站上季線＋量能」篩出，籌碼象限另外顯示。同時符合不代表沒有風險，仍須留意估值與法人動向。</p></div>
+      </div></div>
   </section>
 </main>
 
 <script>
+const DATA_DATE=''; // 內建資料的日期，例如 '2026-11-06'（填了頁面才會顯示）
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const f=(v,d=1,s='')=>v==null?'—':Number(v).toLocaleString('zh-TW',{maximumFractionDigits:d})+s;
 const pc=v=>v==null?'text-slate-300':v>=0?'text-red-400':'text-emerald-400';
-const S=(code,name,industry,close,bias,yoy,avg_vol,buy5,buy5_prev,quadrant,pe,yld)=>({code,name,industry,close,bias,yoy,avg_vol,buy5,buy5_prev,quadrant,pe,yield:yld});
-// 原檔內建的靜態數字（日期不明、未經核對）；啟用自動更新後會被 data.json 取代
-const LEGACY={meta:{updated:'未知',data_date:'',scanned:7,passed:7,legacy:true},stocks:[
-S('2330','台積電','半導體',1050,null,null,45200,24,null,1,24.5,1.5),
-S('2454','聯發科','半導體',1280,null,null,12100,5,null,2,18.2,3.2),
-S('2308','台達電','電子零組件',415,null,null,6800,2,null,2,28.1,2.1),
-S('2382','廣達','電腦及週邊',295,null,null,28500,18,null,1,19.8,3.5),
-S('3231','緯創','電腦及週邊',118,null,null,31000,-3,null,3,16.5,3.8),
-S('3017','奇鋐','電子零組件',680,null,null,9400,9,null,1,32.4,1.8),
-S('9910','豐泰','傳產/其他',195,null,null,1200,-1,null,3,21,3.0)].map((x,i)=>(x.yoy_avg=[28.5,15.2,8.9,42.1,11.4,55.6,4.2][i],x))};
-
+const S=(code,name,industry,close,yoy_avg,avg_vol,buy5,quadrant,pe,yld)=>({code,name,industry,close,yoy_avg,avg_vol,buy5,buy5_prev:null,quadrant,pe,yield:yld,bias:null,yoy:null});
+const BUILTIN=[S('2330','台積電','半導體',1050,28.5,45200,24,1,24.5,1.5),S('2454','聯發科','半導體',1280,15.2,12100,5,2,18.2,3.2),S('2308','台達電','電子零組件',415,8.9,6800,2,2,28.1,2.1),S('2382','廣達','電腦及週邊',295,42.1,28500,18,1,19.8,3.5),S('3231','緯創','電腦及週邊',118,11.4,31000,-3,3,16.5,3.8),S('3017','奇鋐','電子零組件',680,55.6,9400,9,1,32.4,1.8),S('9910','豐泰','傳產/其他',195,4.2,1200,-1,3,21,3.0)];
 const Q={
-1:{t:'🚀 第一象限：加速流入',tag:'最強主流',box:'bg-red-950/40 border-red-800/60',tx:'text-red-300',bd:'bg-red-600',pill:'bg-red-900/50 text-red-300 border-red-700',d:'法人買超，而且比前5日買得更多，資金正在加速進場。',tip:'新手重點：人氣旺，但要確認股價沒漲太遠（看「距季線」）。'},
-2:{t:'⚖️ 第二象限：流入放緩',tag:'高檔震盪',box:'bg-amber-950/40 border-amber-800/60',tx:'text-amber-300',bd:'bg-amber-600',pill:'bg-amber-900/50 text-amber-300 border-amber-700',d:'法人仍在買，但力道比前5日縮小。',tip:'新手重點：上漲動能可能變弱，適合觀察，不宜急著追。'},
-3:{t:'🔍 第三象限：流出放緩',tag:'籌碼沉澱',box:'bg-slate-700/40 border-slate-600',tx:'text-slate-200',bd:'bg-slate-600',pill:'bg-slate-700 text-slate-300 border-slate-600',d:'法人仍在賣，但賣壓比前5日減輕。',tip:'新手重點：賣壓減輕不等於已經轉強，仍需等待買盤回來。'},
-4:{t:'⚠️ 第四象限：加速流出',tag:'保守避開',box:'bg-emerald-950/40 border-emerald-800/60',tx:'text-emerald-300',bd:'bg-emerald-700',pill:'bg-emerald-900/50 text-emerald-300 border-emerald-700',d:'法人賣超，而且比前5日賣得更多，資金正在撤離。',tip:'新手重點：即使其他條件漂亮，也要特別小心。'}};
-
+1:{t:'🚀 第一象限：加速流入',tag:'最強主流',box:'bg-red-950/40 border-red-800/60',tx:'text-red-300',bd:'bg-red-600',pill:'bg-red-900/50 text-red-300 border-red-700',d:'法人買超，而且比前5日買得更多，資金正在加速進場。',tip:'人氣旺，但要確認股價沒漲太遠。',say:'資金正在加速進場'},
+2:{t:'⚖️ 第二象限：流入放緩',tag:'高檔震盪',box:'bg-amber-950/40 border-amber-800/60',tx:'text-amber-300',bd:'bg-amber-600',pill:'bg-amber-900/50 text-amber-300 border-amber-700',d:'法人仍在買，但力道比前5日縮小。',tip:'上漲動能可能變弱，適合觀察，不宜急著追。',say:'法人還在買，但力道變小'},
+3:{t:'🔍 第三象限：流出放緩',tag:'籌碼沉澱',box:'bg-slate-700/40 border-slate-600',tx:'text-slate-200',bd:'bg-slate-600',pill:'bg-slate-700 text-slate-300 border-slate-600',d:'法人仍在賣，但賣壓比前5日減輕。',tip:'賣壓減輕不等於轉強，仍需等買盤回來。',say:'法人仍在賣，但賣壓減輕'},
+4:{t:'⚠️ 第四象限：加速流出',tag:'保守避開',box:'bg-emerald-950/40 border-emerald-800/60',tx:'text-emerald-300',bd:'bg-emerald-700',pill:'bg-emerald-900/50 text-emerald-300 border-emerald-700',d:'法人賣超，而且比前5日賣得更多，資金正在撤離。',tip:'即使其他條件漂亮，也要特別小心。',say:'法人正在加速賣出'}};
 function val(pe){
   if(pe==null)return['無本益比（虧損）','bg-amber-900/50 text-amber-300 border-amber-700'];
   if(pe<15)return['相對偏低','bg-blue-900/50 text-blue-300 border-blue-700'];
   if(pe<=25)return['中間區','bg-slate-700 text-slate-300 border-slate-600'];
   if(pe<=35)return['偏高','bg-amber-900/50 text-amber-300 border-amber-700'];
-  return['過熱','bg-orange-900/50 text-orange-300 border-orange-700'];
-}
-function flags(s){
-  const a=[];
-  if(s.bias>15)a.push('離季線偏遠，追高風險');
-  if(s.pe!=null&&s.pe>35)a.push('本益比過熱');else if(s.pe!=null&&s.pe>25)a.push('本益比偏高');
-  if(s.quadrant===4)a.push('法人加速賣出');else if(s.buy5!=null&&s.buy5<0)a.push('法人近5日賣超');
-  if(s.yoy&&Math.min(...s.yoy)<0)a.push('近6月有營收衰退月份');
-  return a;
-}
-const COLS=[['name','股票代號 / 名稱','text-left'],['close','最新價','text-right'],['quadrant','籌碼象限','text-left'],['buy5','近5日法人(億)','text-right'],['pe','本益比','text-right'],['yield','殖利率','text-right'],['val','估值評估','text-center'],['yoy_avg','近6月YOY','text-right'],['bias','距季線','text-right'],['avg_vol','日均量(張)','text-right'],['risk','風險提醒','text-left']];
-let rows=[],key='yoy_avg',dir=-1,ind='全部',meta={};
+  return['過熱','bg-orange-900/50 text-orange-300 border-orange-700'];}
+function flags(s){const a=[];
+  if(s.bias>15)a.push('股價離季線偏遠（'+f(s.bias,1,'%')+'），追高風險');
+  if(s.pe!=null&&s.pe>35)a.push('本益比過熱（'+f(s.pe,1)+'）');else if(s.pe!=null&&s.pe>25)a.push('本益比偏高（'+f(s.pe,1)+'）');
+  if(s.quadrant===4)a.push('法人正在加速賣出');else if(s.buy5!=null&&s.buy5<0)a.push('法人近5日賣超');
+  if(s.yoy_avg!=null&&s.yoy_avg<10)a.push('營收成長偏低（均值 '+f(s.yoy_avg,1,'%')+'）');
+  if(s.yoy&&Math.min(...s.yoy)<0)a.push('近6月有營收衰退的月份');
+  return a;}
+const yLabel=s=>s.yoy?'近6月':'近3月';
+let rows=[],meta=null,note='',ind='全部';
 
+function renderStatus(){
+  let h;
+  if(meta)h=`資料日期：<b>${esc(meta.data_date)}</b>（更新於 ${esc(meta.updated)}）｜掃描 ${meta.scanned} 檔，入選 ${meta.passed} 檔`;
+  else h=DATA_DATE?`資料日期：<b>${esc(DATA_DATE)}</b>（頁面內建資料）`:'<b class="text-amber-400">⚠ 內建資料未標示日期，請勿當作即時行情。</b><span class="text-slate-400 text-xs">（在程式開頭填入 DATA_DATE 可顯示日期）</span>';
+  const d=meta?meta.data_date:DATA_DATE;
+  if(d&&(Date.now()-new Date(d))/864e5>4)h+='<br><b class="text-amber-400">資料已超過4天，請勿當作最新行情。</b>';
+  $('#status').innerHTML=h+note;}
 function renderQuads(){
-  $('#quads').innerHTML=[1,2,3,4].map(n=>{
-    const q=Q[n],L=rows.filter(s=>s.quadrant===n);
-    return `<div class="${q.box} border p-5 rounded-xl">
-      <div class="flex items-center justify-between mb-2"><span class="font-bold ${q.tx}">${q.t}</span><span class="${q.bd} text-white text-xs px-2.5 py-0.5 rounded-full">${q.tag}</span></div>
-      <p class="text-xs text-slate-300 leading-relaxed">${q.d}</p>
-      <p class="text-xs text-slate-400 leading-relaxed mt-1">${q.tip}</p>
-      <div class="text-xs ${q.tx} bg-black/20 p-2 rounded-lg mt-3">📌 本次名單 ${L.length} 檔：${L.length?L.map(s=>esc(s.name)+' ('+esc(s.code)+')').join('、'):'無'}</div></div>`;}).join('');
+  $('#quads').innerHTML=[1,2,3,4].map(n=>{const q=Q[n],L=rows.filter(s=>s.quadrant===n);
+    return `<div class="${q.box} border p-5 rounded-xl"><div class="flex items-center justify-between mb-2"><span class="font-bold ${q.tx}">${q.t}</span><span class="${q.bd} text-white text-xs px-2.5 py-0.5 rounded-full">${q.tag}</span></div>
+    <p class="text-xs text-slate-300">${q.d}</p><p class="text-xs text-slate-400 mt-1">新手重點：${q.tip}</p>
+    <div class="text-xs ${q.tx} bg-black/20 p-2 rounded-lg mt-3">📌 目前 ${L.length} 檔：${L.length?L.map(s=>esc(s.name)+' ('+esc(s.code)+')').join('、'):'無'}</div></div>`}).join('');
   const sum={};rows.forEach(s=>{if(s.buy5!=null)sum[s.industry]=(sum[s.industry]||0)+s.buy5});
-  const top=Object.entries(sum).filter(e=>e[1]>0).sort((a,b)=>b[1]-a[1])[0];
-  $('#hot').innerHTML=top?`🔥 法人近5日買超最多的產業：<strong class="text-red-400">${esc(top[0])}</strong>`:'目前沒有明顯買超的產業';
-}
+  const t=Object.entries(sum).filter(e=>e[1]>0).sort((a,b)=>b[1]-a[1])[0];
+  $('#hot').innerHTML=t?`🔥 法人買超最多的產業：<strong class="text-red-400">${esc(t[0])}</strong>`:'目前沒有明顯買超的產業';}
 function renderFilters(){
   const inds=['全部',...new Set(rows.map(s=>s.industry).filter(Boolean))];
-  $('#filters').innerHTML=inds.map(i=>`<button data-i="${esc(i)}" class="px-3 py-1 rounded-full text-xs font-semibold transition ${i===ind?'bg-emerald-600 text-white':'bg-slate-700 text-slate-300 hover:bg-slate-600'}">${esc(i)}</button>`).join('');
-  $('#filters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ind=b.dataset.i;renderFilters();renderTable()});
-}
-function renderTable(){
-  $('#thead').innerHTML='<tr>'+COLS.map(c=>`<th class="py-3 px-4 ${c[2]} font-semibold whitespace-nowrap"><button data-k="${c[0]}" class="hover:text-white">${c[1]}${c[0]===key?(dir<0?' ▼':' ▲'):''}</button></th>`).join('')+'</tr>';
-  $('#thead').querySelectorAll('button').forEach(b=>b.onclick=()=>{let k=b.dataset.k;if(k==='val')k='pe';if(k==='risk')k='nflags';dir=k===key?-dir:-1;key=k;renderTable()});
-  const list=rows.filter(s=>ind==='全部'||s.industry===ind).sort((a,b)=>{
-    const g=s=>key==='name'?s.code:key==='nflags'?flags(s).length:s[key];
-    const x=g(a),y=g(b);return((x==null)-(y==null))||(x>y?1:x<y?-1:0)*dir;});
-  $('#tbody').innerHTML=list.length?list.map(s=>{
-    const q=Q[s.quadrant],[vt,vc]=val(s.pe),fl=flags(s),mn=s.yoy?Math.min(...s.yoy):null;
-    return `<tr class="hover:bg-slate-700/50">
-      <td class="py-3 px-4"><div class="font-mono font-semibold">${esc(s.code)} <span class="text-slate-400 text-xs font-normal">(${esc(s.industry)})</span></div><div class="font-bold text-slate-200">${esc(s.name)}</div></td>
-      <td class="py-3 px-4 text-right font-mono">$${f(s.close,2)}</td>
-      <td class="py-3 px-4">${q?`<span class="px-2.5 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${q.pill}">${q.t}</span>`:'—'}</td>
-      <td class="py-3 px-4 text-right font-mono ${pc(s.buy5)}">${s.buy5==null?'—':(s.buy5>0?'+':'')+f(s.buy5,1)}<div class="text-xs text-slate-400">前5日 ${f(s.buy5_prev,1)}</div></td>
-      <td class="py-3 px-4 text-right font-mono">${f(s.pe,1)}</td>
-      <td class="py-3 px-4 text-right font-mono">${f(s.yield,2,'%')}</td>
-      <td class="py-3 px-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border whitespace-nowrap ${vc}">${vt}</span></td>
-      <td class="py-3 px-4 text-right font-mono text-red-400">平均 ${f(s.yoy_avg,1,'%')}<div class="text-xs text-slate-400">最低 <span class="${pc(mn)}">${f(mn,1,'%')}</span></div></td>
-      <td class="py-3 px-4 text-right font-mono ${s.bias>15?'text-amber-400':''}">${f(s.bias,1,'%')}</td>
-      <td class="py-3 px-4 text-right font-mono text-slate-300">${f(s.avg_vol,0)}</td>
-      <td class="py-3 px-4 text-xs">${fl.length?fl.map(t=>`<div class="text-amber-300">⚠ ${t}</div>`).join(''):'<span class="text-slate-400">無明顯警示（不代表安全）</span>'}</td></tr>`;}).join('')
-    :'<tr><td colspan="11" class="py-8 text-center text-slate-500">沒有符合條件的股票</td></tr>';
-  $('#rowCount').textContent=`顯示 ${list.length} 檔符合條件的個股`;
-}
-function init(d,note){
-  rows=d.stocks;rows.forEach(s=>{s.yoy_avg??=s.yoy&&Math.round(s.yoy.reduce((a,b)=>a+b,0)/s.yoy.length*10)/10});
-  meta=d.meta;const age=(Date.now()-new Date(meta.data_date))/864e5;
-  let h=meta.legacy?'<b class="text-amber-400">⚠ 目前顯示的是靜態資料（資料日期不明，未連接即時資料）。</b>'+(note||''):`資料日期：<b>${esc(meta.data_date)}</b>（更新於 ${esc(meta.updated)}）｜掃描 ${meta.scanned} 檔，入選 ${meta.passed} 檔`;
-  if(!meta.legacy&&age>4)h+='<br><b class="text-amber-400">資料已超過4天未更新，請勿當作最新行情。</b>';
-  $('#status').innerHTML=h;renderQuads();renderFilters();renderTable();
-}
-fetch('data.json?'+Date.now()).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>init(d))
-  .catch(()=>init(LEGACY,'<br><span class="text-slate-400 text-xs">尚未啟用自動更新（找不到 data.json）；啟用後會自動換成最新資料。</span>'));
-
+  $('#filters').innerHTML=inds.map(i=>`<button data-i="${esc(i)}" class="px-3 py-1 rounded-full text-xs font-semibold ${i===ind?'bg-emerald-600 text-white':'bg-slate-700 text-slate-300 hover:bg-slate-600'}">${esc(i)}</button>`).join('');
+  $('#filters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ind=b.dataset.i;renderFilters();renderAll()});}
+function list(){
+  const k=$('#sortSel').value;
+  return rows.filter(s=>ind==='全部'||s.industry===ind).sort((a,b)=>{
+    const x=a[k],y=b[k];if(x==null||y==null)return(x==null)-(y==null);
+    return k==='code'||k==='pe'?(x>y?1:-1):(y-x);});}
+function renderAll(){
+  const L=list();
+  $('#cards').innerHTML=L.map(s=>{
+    const q=Q[s.quadrant],[vt,vc]=val(s.pe),fl=flags(s),n=fl.length;
+    const [vl,vcl]=n===0?['較無警示','bg-blue-900/50 text-blue-300 border-blue-700']:n===1?['需留意','bg-amber-900/50 text-amber-300 border-amber-700']:['需特別小心','bg-orange-900/50 text-orange-300 border-orange-700'];
+    const fund=s.buy5==null?'無法人資料':`${q?q.say+'：':''}近5日法人${s.buy5>=0?'買超':'賣超'} <b class="${pc(s.buy5)}">${f(Math.abs(s.buy5),1)} 億</b>`+(s.buy5_prev!=null?`（前5日 ${f(s.buy5_prev,1)} 億）`:'');
+    return `<div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-3">
+      <div class="flex justify-between items-start"><div><div class="font-bold text-lg">${esc(s.name)} <span class="font-mono text-sm text-slate-400">${esc(s.code)}</span></div><div class="text-xs text-slate-400">${esc(s.industry)}</div></div><div class="text-right font-mono text-xl">$${f(s.close,2)}</div></div>
+      <div class="flex gap-1.5 flex-wrap">${q?`<span class="px-2.5 py-1 rounded-full text-xs border ${q.pill}">${q.t}</span>`:''}<span class="px-2.5 py-1 rounded-full text-xs border ${vc}">估值：${vt}</span><span class="px-2.5 py-1 rounded-full text-xs border ${vcl}">${vl}（${n} 項警示）</span></div>
+      <ul class="text-xs text-slate-300 space-y-1.5 leading-relaxed">
+        <li>💰 <b>資金：</b>${fund}</li>
+        <li>📈 <b>成長：</b>${yLabel(s)}營收年增平均 <b class="${pc(s.yoy_avg)}">${f(s.yoy_avg,1,'%')}</b>${s.yoy?`（最低 <span class="${pc(Math.min(...s.yoy))}">${f(Math.min(...s.yoy),1,'%')}</span>）`:''}</li>
+        <li>🏷 <b>價格：</b>本益比 ${f(s.pe,1)}，殖利率 ${f(s.yield,2,'%')}；日均量 ${f(s.avg_vol,0)} 張</li></ul>
+      <div class="text-xs rounded-lg bg-slate-900/60 p-2.5">${n?fl.map(t=>`<div class="text-amber-300">⚠ ${t}</div>`).join(''):'<span class="text-slate-400">目前沒有明顯警示（不代表安全）</span>'}</div></div>`}).join('')||'<p class="text-slate-500">沒有符合條件的股票</p>';
+  $('#rowCount').textContent=`顯示 ${L.length} 檔符合條件的個股｜資料來源：FinMind 開源資料`;
+  $('#tbody').innerHTML=L.map(s=>{const q=Q[s.quadrant],[vt,vc]=val(s.pe);
+    return `<tr><td class="p-3"><b>${esc(s.code)}</b> ${esc(s.name)}</td><td class="p-3 text-right font-mono">$${f(s.close,2)}</td><td class="p-3 text-xs">${q?q.t:'—'}</td><td class="p-3 text-right font-mono ${pc(s.buy5)}">${s.buy5>0?'+':''}${f(s.buy5,1)}</td><td class="p-3 text-right font-mono">${f(s.pe,1)}</td><td class="p-3 text-right font-mono">${f(s.yield,2,'%')}</td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-xs border ${vc}">${vt}</span></td><td class="p-3 text-right font-mono ${pc(s.yoy_avg)}">${f(s.yoy_avg,1,'%')}</td><td class="p-3 text-right font-mono">${f(s.avg_vol,0)}</td></tr>`}).join('');}
+function toggleReport(){$('#report').classList.toggle('hidden');$('#chev').textContent=$('#report').classList.contains('hidden')?'▼':'▲';}
 function exportCSV(){
-  let c="\uFEFF代號,名稱,產業,最新價,籌碼象限,近5日法人買超(億),前5日(億),本益比,殖利率%,近6月YOY平均%,近6月YOY最低%,距季線%,日均量(張),風險提醒\n";
-  rows.forEach(s=>{c+=[s.code,s.name,s.industry,s.close,Q[s.quadrant]?Q[s.quadrant].t:'',s.buy5,s.buy5_prev,s.pe,s.yield,s.yoy_avg,(s.yoy?Math.min(...s.yoy):""),s.bias,s.avg_vol,flags(s).join('；')].map(v=>`"${v??''}"`).join(',')+"\n"});
+  let c="\uFEFF代號,名稱,產業,最新價,籌碼象限,近5日法人買超(億),本益比,殖利率%,營收YOY均值%,日均量(張),警示\n";
+  list().forEach(s=>{c+=[s.code,s.name,s.industry,s.close,Q[s.quadrant]?Q[s.quadrant].t:'',s.buy5,s.pe,s.yield,s.yoy_avg,s.avg_vol,flags(s).join('；')].map(v=>`"${v??''}"`).join(',')+"\n"});
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:'text/csv;charset=utf-8'}));
-  a.download='台股強勢股_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
-}
+  a.download='台股強勢股_'+new Date().toISOString().slice(0,10)+'.csv';a.click();}
+
+$('#sortSel').onchange=renderAll;
+fetch('data.json?'+Date.now()).then(r=>r.ok?r.json():Promise.reject()).then(d=>{
+  if(d.meta&&d.meta.sample){note='<br><span class="text-slate-400 text-xs">data.json 內是範例資料，已忽略，改顯示頁面內建資料。</span>';throw 0;}
+  rows=d.stocks;meta=d.meta;}).catch(()=>{rows=BUILTIN;meta=null;}).then(()=>{renderStatus();renderQuads();renderFilters();renderAll();});
 </script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="台股強勢股篩選學習工具：營收、季線、量能、法人籌碼一覽（僅供學習參考）">
-<title>台股強勢股篩選學習工具</title>
-<style>
-:root{--bg:#0f172a;--card:#1e293b;--line:#334155;--tx:#f1f5f9;--mut:#a8b3c5;--up:#f87171;--down:#4ade80;--amb:#fbbf24;--blue:#60a5fa}
-@media(prefers-color-scheme:light){:root{--bg:#f1f5f9;--card:#fff;--line:#cbd5e1;--tx:#0f172a;--mut:#475569;--up:#dc2626;--down:#15803d;--amb:#b45309;--blue:#1d4ed8}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,"Noto Sans TC",sans-serif}
-.w{max-width:1100px;margin:0 auto;padding:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
-h1{font-size:1.4rem;margin:0 0 4px}h2{font-size:1.1rem;margin:0 0 8px}
-.mut{color:var(--mut);font-size:.9rem}.warn{border-color:var(--amb)}.warn b{color:var(--amb)}
-.up{color:var(--up)}.down{color:var(--down)}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-.chip{border:1px solid var(--line);border-radius:99px;padding:2px 12px;margin:2px;font-size:.9rem}
-.chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
-.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:900px}
-th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-th{font-size:.85rem;color:var(--mut);position:sticky;top:0;background:var(--card)}
-th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--card)}
-.tag{border:1px solid currentColor;border-radius:6px;padding:1px 8px;font-size:.85rem}
-.q1{color:var(--up)}.q2{color:var(--amb)}.q3{color:var(--blue)}.q4{color:var(--down)}
-details{margin:6px 0}summary{cursor:pointer;font-weight:600}
-.top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
-</style>
-</head>
-<body><div class="w">
-<div class="top"><div><h1>台股強勢股篩選學習工具</h1>
-<div class="mut">練習用「營收＋季線＋量能＋法人」框架看股票，不是買賣建議</div></div>
-<button class="chip" id="csv">匯出 CSV</button></div>
-
-<div class="card warn" style="margin-top:12px"><b>風險聲明：</b>本頁內容僅供學習與參考，不構成投資建議，也不保證資料完全正確。入選不代表會漲，投資前請自行判斷並承擔風險。</div>
-<div class="card" id="status">載入資料中…</div>
-
-<div class="card"><div id="chips"></div>
-<div class="mut" style="margin:8px 0">台股慣例：<span class="up">紅＝買超／上漲</span>、<span class="down">綠＝賣超／下跌</span>。點欄位標題可排序。</div>
-<div class="tw"><table><thead id="th"></thead><tbody id="tb"></tbody></table></div></div>
-
-<div class="card"><h2>怎麼讀這張表</h2>
-<ol class="mut"><li>先看「入選條件」是否合理，再看右邊的風險欄位。</li>
-<li>「距季線」越大，代表漲離均線越遠，追高風險越高（超過 15% 會標示）。</li>
-<li>籌碼象限與清單篩選是兩件事：清單只用基本面＋技術面＋量能篩，法人可能正在買，也可能正在賣。</li></ol></div>
-
-<div class="card"><h2>篩選與判斷規則（全部公開）</h2>
-<ul class="mut"><li><b>入選條件：</b>近 6 個月中至少 5 個月營收年增率（YOY）大於 0；收盤價高於 60 日均線（季線）；近 20 日平均成交量 ≥ 500 張。</li>
-<li><b>法人買賣超：</b>三大法人合計，以每日買賣超股數 × 收盤價換算的約略金額（億元），取近 5 日合計，與再前 5 日比較。</li>
-<li><b>象限：</b>① 近5日買超且比前5日多＝加速流入；② 買超但比前5日少＝流入放緩；③ 賣超但比前5日縮小＝流出放緩；④ 賣超且比前5日更多＝加速流出。</li>
-<li><b>估值標籤（簡易門檻，未區分產業）：</b>本益比 &lt;15 相對偏低；15–25 中間區；25–35 偏高；&gt;35 過熱；無本益比（虧損）另標示。僅為粗略分類，不是便宜或貴的結論。</li></ul>
-<h2 style="margin-top:12px">名詞小教室</h2>
-<details><summary>本益比（PE）</summary><div class="mut">股價 ÷ 每股盈餘，代表以目前獲利要幾年回本。不同產業合理水準差很多。</div></details>
-<details><summary>殖利率</summary><div class="mut">每年配息 ÷ 股價。高殖利率也可能是因為股價下跌。</div></details>
-<details><summary>YOY（年增率）</summary><div class="mut">與去年同月相比成長多少。</div></details>
-<details><summary>季線（MA60）</summary><div class="mut">最近 60 個交易日收盤價平均，常用來看中期趨勢。</div></details>
-<details><summary>張／買超／賣超</summary><div class="mut">1 張＝1000 股。買超＝買進多於賣出，賣超相反。</div></details></div>
-
-<div class="mut" style="text-align:center">資料來源：FinMind 開源資料，由 GitHub Actions 每個交易日晚間自動更新。</div>
-</div>
-<script>
-const $=s=>document.querySelector(s);
-const QN={1:'① 加速流入',2:'② 流入放緩',3:'③ 流出放緩',4:'④ 加速流出'};
-const fmt=(v,d=1,s='')=>v==null?'—':v.toLocaleString('zh-TW',{maximumFractionDigits:d})+s;
-const sgn=v=>v==null?'':v>=0?'up':'down';
-const val=pe=>pe==null?['無本益比','q2']:pe<15?['相對偏低','q3']:pe<=25?['中間區','']:pe<=35?['偏高','q2']:['過熱','q1'];
-const COLS=[
-['name','股票',s=>`<b>${s.code}</b> ${s.name}<div class="mut" style="font-size:.8rem">${s.industry||''}</div>`],
-['close','收盤',s=>fmt(s.close,2)],
-['bias','距季線',s=>`<span class="${s.bias>15?'q2':''}">${fmt(s.bias,1,'%')}${s.bias>15?' ⚠':''}</span>`],
-['yoy_avg','近6月YOY',s=>`<span class="up">平均 ${fmt(s.yoy_avg,1)}%</span><div class="mut" style="font-size:.8rem">最低 <span class="${sgn(Math.min(...s.yoy))}">${fmt(Math.min(...s.yoy),1)}%</span></div>`],
-['avg_vol','20日均量(張)',s=>fmt(s.avg_vol,0)],
-['buy5','法人近5日(億)',s=>s.buy5==null?'—':`<span class="${sgn(s.buy5)}">${s.buy5>0?'+':''}${fmt(s.buy5,1)}</span><div class="mut" style="font-size:.8rem">前5日 ${fmt(s.buy5_prev,1)}</div>`],
-['quadrant','籌碼象限',s=>s.quadrant?`<span class="tag q${s.quadrant}">${QN[s.quadrant]}</span>`:'—'],
-['pe','本益比',s=>fmt(s.pe,1)],
-['yield','殖利率',s=>fmt(s.yield,2,'%')],
-['val','估值標籤',s=>{const[t,c]=val(s.pe);return `<span class="tag ${c}">${t}</span>`}]];
-let rows=[],key='yoy_avg',dir=-1,ind='全部';
-function render(){
-  $('#th').innerHTML='<tr>'+COLS.map(c=>`<th><button data-k="${c[0]}">${c[1]}${c[0]===key?(dir<0?' ▼':' ▲'):''}</button></th>`).join('')+'</tr>';
-  $('#th').querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=b.dataset.k==='val'?'pe':b.dataset.k;dir=k===key?-dir:-1;key=k;render()});
-  const list=rows.filter(s=>ind==='全部'||s.industry===ind).sort((a,b)=>{
-    const x=key==='name'?a.code:a[key],y=key==='name'?b.code:b[key];
-    return (x==null)-(y==null)||(x>y?1:x<y?-1:0)*dir});
-  $('#tb').innerHTML=list.length?list.map(s=>'<tr>'+COLS.map(c=>`<td>${c[2](s)}</td>`).join('')+'</tr>').join(''):'<tr><td colspan="10" class="mut">目前沒有符合條件的個股</td></tr>';
-}
-function chips(){
-  const inds=['全部',...new Set(rows.map(s=>s.industry).filter(Boolean))];
-  $('#chips').innerHTML='';
-  inds.forEach(i=>{const b=document.createElement('button');b.className='chip'+(i===ind?' on':'');b.textContent=i;
-    b.onclick=()=>{ind=i;chips();render()};$('#chips').appendChild(b)});
-}
-fetch('data.json?'+Date.now()).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
-  rows=d.stocks;const m=d.meta;
-  const age=(Date.now()-new Date(m.data_date))/864e5;
-  let h=m.sample?'<b class="up">⚠ 這是範例資料，不是真實行情。</b>':`資料日期：<b>${m.data_date}</b>（更新於 ${m.updated}）｜掃描 ${m.scanned} 檔，入選 ${m.passed} 檔`;
-  if(!m.sample&&age>4)h+='<br><b class="q2">資料已超過 4 天未更新，請勿當作最新行情。</b>';
-  $('#status').innerHTML=h;chips();render();
-}).catch(()=>{$('#status').innerHTML='<b class="up">無法載入 data.json，請稍後再試。</b>'});
-$('#csv').onclick=()=>{
-  const head='\uFEFF代號,名稱,產業,收盤,距季線%,YOY1,YOY2,YOY3,YOY4,YOY5,YOY6,20日均量,法人近5日億,前5日億,象限,PE,殖利率%\n';
-  const body=rows.map(s=>[s.code,s.name,s.industry,s.close,s.bias,...s.yoy,s.avg_vol,s.buy5,s.buy5_prev,s.quadrant?QN[s.quadrant]:'',s.pe,s.yield].map(v=>`"${v??''}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([head+body],{type:'text/csv;charset=utf-8'}));
-  a.download='stocks_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
-};
-</script>
-</body></html>

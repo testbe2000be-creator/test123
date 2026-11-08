@@ -1,0 +1,345 @@
+ <!-- System Controls -->
+    <div class="flex items-center space-x-3 text-sm">
+      <span class="hidden md:inline-flex items-center gap-1.5 text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+        <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+        更新時間: <span id="update-time">2026-11-08 14:30</span>
+      </span>
+      <button id="refresh-btn" onclick="refreshData()" class="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-3.5 py-1.5 rounded-lg transition text-xs shadow-lg shadow-emerald-900/30">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+        <span>重新篩選</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Institutional Capital Quadrant Section -->
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+    <div>
+      <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
+        <i data-lucide="compass" class="w-5 h-5 text-emerald-400"></i>
+        三大法人籌碼資金流向四象限圖表 (盤後自動整理)
+      </h2>
+      <p class="text-xs text-slate-400 mt-0.5">即時追蹤外資、投信與自營商資金流向：一根圖表搞懂資金正往哪個板塊灌入！</p>
+    </div>
+    <div class="flex items-center space-x-2 text-xs">
+      <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">🚀 第一象限: 加速流入</span>
+      <span class="px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium">⚖️ 第二象限: 流入放緩</span>
+      <span class="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium">⚠️ 第三象限: 加速流出</span>
+      <span class="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">🔍 第四象限: 流出放緩</span>
+    </div>
+  </div>
+
+  <!-- Quadrant Canvas Box -->
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+    <div class="lg:col-span-3 bg-slate-950 p-4 rounded-xl border border-slate-800 h-80 relative">
+      <canvas id="quadrantChart"></canvas>
+    </div>
+    
+    <!-- Institutional Market Summary Panel -->
+    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col justify-between space-y-3">
+      <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
+        <span>今日三大法人買賣超統計</span>
+        <span class="text-[10px] text-slate-500 font-normal">單位: 億元</span>
+      </h3>
+
+      <div class="space-y-2.5 text-xs">
+        <div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+          <span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="globe" class="w-3.5 h-3.5 text-cyan-400"></i>外資淨買超</span>
+          <span class="font-mono font-bold text-emerald-400">+142.5 億</span>
+        </div>
+        <div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+          <span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="building-2" class="w-3.5 h-3.5 text-purple-400"></i>投信淨買超</span>
+          <span class="font-mono font-bold text-emerald-400">+38.2 億</span>
+        </div>
+        <div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+          <span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="user-check" class="w-3.5 h-3.5 text-amber-400"></i>自營商淨買超</span>
+          <span class="font-mono font-bold text-rose-400">-12.8 億</span>
+        </div>
+        <div class="flex items-center justify-between bg-emerald-950/30 p-2.5 rounded-lg border border-emerald-500/20 font-semibold">
+          <span class="text-slate-200">三大法人合計</span>
+          <span class="font-mono text-emerald-400 font-bold">+167.9 億</span>
+        </div>
+      </div>
+
+      <div class="text-[11px] text-slate-400 bg-slate-900 p-2.5 rounded-lg border border-slate-800 leading-relaxed">
+        💡 <strong>圖表解讀：</strong>落於第一象限（右上角）標的分屬資金加速強勢灌入股，建議優先關注。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overview Stats Banner -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <!-- Total Qualified -->
+  <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm flex items-center justify-between">
+    <div>
+      <p class="text-xs text-slate-400 font-medium">精選強勢股</p>
+      <h3 id="stat-count" class="text-2xl font-bold text-emerald-400 mt-1">0 <span class="text-sm font-normal text-slate-400">檔</span></h3>
+    </div>
+    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg">
+      <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+    </div>
+  </div>
+
+  <!-- Average PE -->
+  <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm flex items-center justify-between">
+    <div>
+      <p class="text-xs text-slate-400 font-medium">篩選標的平均本益比</p>
+      <h3 id="stat-avg-pe" class="text-2xl font-bold text-slate-100 mt-1">-- <span class="text-sm font-normal text-slate-400">倍</span></h3>
+    </div>
+    <div class="p-3 bg-blue-500/10 text-blue-400 rounded-lg">
+      <i data-lucide="pie-chart" class="w-6 h-6"></i>
+    </div>
+  </div>
+
+  <!-- Average Dividend Yield -->
+  <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm flex items-center justify-between">
+    <div>
+      <p class="text-xs text-slate-400 font-medium">平均預估殖利率</p>
+      <h3 id="stat-avg-yield" class="text-2xl font-bold text-amber-400 mt-1">-- <span class="text-sm font-normal text-slate-400">%</span></h3>
+    </div>
+    <div class="p-3 bg-amber-500/10 text-amber-400 rounded-lg">
+      <i data-lucide="coins" class="w-6 h-6"></i>
+    </div>
+  </div>
+
+  <!-- Active Industries -->
+  <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm flex items-center justify-between">
+    <div>
+      <p class="text-xs text-slate-400 font-medium">涵蓋產業數</p>
+      <h3 id="stat-industry-count" class="text-2xl font-bold text-indigo-400 mt-1">0 <span class="text-sm font-normal text-slate-400">類</span></h3>
+    </div>
+    <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-lg">
+      <i data-lucide="layers" class="w-6 h-6"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Filter & Control Toolbar -->
+<div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+  
+  <!-- Search Input -->
+  <div class="relative w-full md:w-72">
+    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
+    <input 
+      type="text" 
+      id="search-input" 
+      oninput="handleSearch()"
+      placeholder="搜尋股票代號、名稱、業務..." 
+      class="w-full bg-slate-950 border border-slate-700 text-slate-200 text-sm rounded-lg pl-9 pr-3 py-2 focus:outline-none focus:border-emerald-500 transition placeholder-slate-500"
+    >
+  </div>
+
+  <!-- Industry Pills / Select Dropdown -->
+  <div class="flex flex-wrap items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0" id="industry-filter-bar">
+    <!-- Industry Buttons Injected via JS -->
+  </div>
+
+  <!-- Action Tools -->
+  <div class="flex items-center space-x-2 w-full md:w-auto justify-end border-t md:border-t-0 border-slate-800 pt-3 md:pt-0">
+    <!-- View Mode Switch -->
+    <div class="bg-slate-950 p-1 rounded-lg border border-slate-800 flex items-center text-xs">
+      <button id="view-grouped-btn" onclick="setViewMode('grouped')" class="px-2.5 py-1 rounded-md text-emerald-400 font-medium bg-slate-800 transition">
+        依產業分組
+      </button>
+      <button id="view-flat-btn" onclick="setViewMode('flat')" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-slate-200 transition">
+        總表檢視
+      </button>
+    </div>
+
+    <!-- Export CSV Button -->
+    <button onclick="exportToCSV()" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-2 rounded-lg border border-slate-700 transition">
+      <i data-lucide="download" class="w-3.5 h-3.5"></i>
+      <span>匯出 CSV</span>
+    </button>
+  </div>
+</div>
+
+<!-- Screener Results Section -->
+<div id="results-container" class="space-y-6">
+  <!-- Dynamic Tables will be rendered here -->
+</div>
+
+<!-- Industry Trend Plain Text Report Section -->
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+  <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+      <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
+      產業趨勢白話文解讀報告 & 盤後備註
+    </h3>
+    <button onclick="toggleReport()" id="report-toggle-btn" class="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1">
+      <span>收合報告</span>
+      <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
+    </button>
+  </div>
+
+  <div id="report-content" class="space-y-4 text-xs leading-relaxed text-slate-300">
+    <!-- Target Sector Notice -->
+    <div class="bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-3.5 flex items-start gap-3">
+      <div class="p-1.5 bg-emerald-500/20 text-emerald-400 rounded-lg shrink-0 mt-0.5">
+        <i data-lucide="target" class="w-4 h-4"></i>
+      </div>
+      <div>
+        <strong class="text-emerald-300 text-sm font-semibold">🎯 這波趨勢對台股哪個族群影響最大？</strong>
+        <p class="mt-1 text-slate-300">
+          影響最大的是 <strong class="text-emerald-400">「AI 伺服器供應鏈」</strong> 與 <strong class="text-emerald-400">「先進半導體／高效能運算 (HPC)」</strong> 族群。簡單來說，就是那些幫全球科技巨頭（如微軟、Google、NVIDIA）打造 AI 晶片、組裝超級電腦、提供散熱與電源解方，且手上訂單滿到每個月營收都在年增成長的公司。
+        </p>
+      </div>
+    </div>
+
+    <!-- Breakdown Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- 1. Major Players -->
+      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1.5">
+        <h4 class="font-bold text-slate-200 flex items-center gap-1.5 text-xs">
+          <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-400"></i> 1. 主要廠商（誰是老大？）
+        </h4>
+        <ul class="space-y-1 text-slate-400 pl-4 list-disc">
+          <li><strong class="text-slate-200">晶圓代工與 IC 設計：</strong> 台積電 (2330)、聯發科 (2454)。</li>
+          <li><strong class="text-slate-200">AI 伺服器與代工：</strong> 廣達 (2382)、緯創 (3231)、緯穎 (6669)。</li>
+          <li><strong class="text-slate-200">關鍵零組件（電源與散熱）：</strong> 台達電 (2308)、奇鋐 (3017)。</li>
+        </ul>
+      </div>
+
+      <!-- 2. Recent News -->
+      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1.5">
+        <h4 class="font-bold text-slate-200 flex items-center gap-1.5 text-xs">
+          <i data-lucide="newspaper" class="w-3.5 h-3.5 text-blue-400"></i> 2. 近期新聞（最近發生了什麼事？）
+        </h4>
+        <ul class="space-y-1 text-slate-400 pl-4 list-disc">
+          <li><strong class="text-slate-200">AI 需求沒有冷場：</strong> 全球各大科技廠持續搶買 AI 晶片與伺服器，帶動台灣供應鏈營收連續好幾個月繳出「年增率正成長 (YoY > 0)」的好成績。</li>
+          <li><strong class="text-slate-200">技術面轉強：</strong> 隨著基本面好轉，資金重新回流，這些公司的股價紛紛爬回「60日均線（季線）」之上，代表買盤重新看好。</li>
+        </ul>
+      </div>
+
+      <!-- 3. Institutional View -->
+      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1.5">
+        <h4 class="font-bold text-slate-200 flex items-center gap-1.5 text-xs">
+          <i data-lucide="line-chart" class="w-3.5 h-3.5 text-indigo-400"></i> 3. 法人看法（大戶怎麼看？）
+        </h4>
+        <ul class="space-y-1 text-slate-400 pl-4 list-disc">
+          <li><strong class="text-slate-200">基本面有底氣：</strong> 法人認為光講題材不夠，看重「營收有沒有實際開出來」。連 3 個月營收年成長代表有實質訂單支撐。</li>
+          <li><strong class="text-slate-200">技術面訊號：</strong> 股價站上季線，通常代表中長期的下跌或整理趨勢已經扭轉，買盤正在聚攏。</li>
+        </ul>
+      </div>
+
+      <!-- 4. Target Stocks -->
+      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1.5">
+        <h4 class="font-bold text-slate-200 flex items-center gap-1.5 text-xs">
+          <i data-lucide="list-checks" class="w-3.5 h-3.5 text-emerald-400"></i> 4. 相關台股標的（符合條件的代表性公司）
+        </h4>
+        <ul class="space-y-1 text-slate-400 pl-4 list-disc">
+          <li><strong class="text-slate-200">半導體：</strong> 台積電 (2330)、聯發科 (2454)、創意 (3443)。</li>
+          <li><strong class="text-slate-200">伺服器代工：</strong> 廣達 (2382)、鴻海 (2317)、緯穎 (6669)。</li>
+          <li><strong class="text-slate-200">重電綠能：</strong> 華城 (1519)、士電 (1503)。</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 5. Summary Conclusion -->
+    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+      <h4 class="font-bold text-slate-200 flex items-center gap-1.5 text-xs mb-1">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i> 5. 摘要結論（白話總結）
+      </h4>
+      <p class="text-slate-400 leading-relaxed">
+        這份清單篩選出來的股票，集結了<strong class="text-emerald-400">「營收正在賺錢成長（基本面）」</strong>加上<strong class="text-emerald-400">「股價轉強站上均線（技術面）」</strong>與<strong class="text-emerald-400">「三大法人籌碼持續灌入」</strong>的三重優勢。代表它們不是靠短期炒作的殭屍股，而是有真實產業需求支撐的強勢主流族群。
+      </p>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Modal Header -->
+  <div class="flex items-start space-x-4 border-b border-slate-800 pb-4">
+    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl font-mono text-xl font-bold border border-emerald-500/20" id="modal-code">
+      --
+    </div>
+    <div>
+      <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+        <span id="modal-name">股票名稱</span>
+        <span id="modal-industry" class="text-xs font-normal px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">產業</span>
+      </h2>
+      <p id="modal-business" class="text-xs text-slate-400 mt-1">核心業務內容預覽...</p>
+    </div>
+  </div>
+
+  <!-- Modal Key Numbers -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+      <span class="text-xs text-slate-400">最新收盤價</span>
+      <p id="modal-price" class="text-lg font-bold text-emerald-400 mt-0.5">--</p>
+    </div>
+    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+      <span class="text-xs text-slate-400">本益比 (PE)</span>
+      <p id="modal-pe" class="text-lg font-bold text-slate-200 mt-0.5">--</p>
+    </div>
+    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+      <span class="text-xs text-slate-400">預估殖利率</span>
+      <p id="modal-yield" class="text-lg font-bold text-amber-400 mt-0.5">--</p>
+    </div>
+    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+      <span class="text-xs text-slate-400">20日日均量</span>
+      <p id="modal-volume" class="text-lg font-bold text-slate-200 mt-0.5">--</p>
+    </div>
+  </div>
+
+  <!-- Revenue Chart & Breakdowns -->
+  <div>
+    <h4 class="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
+      <i data-lucide="bar-chart-2" class="w-4 h-4 text-emerald-400"></i>
+      近 3 個月營收 YoY 成長動能 (連續正成長)
+    </h4>
+    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 h-56 relative">
+      <canvas id="modal-revenue-chart"></canvas>
+    </div>
+  </div>
+
+  <!-- Technical Condition Status -->
+  <div class="bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-3.5 flex items-center gap-3">
+    <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400 shrink-0"></i>
+    <div class="text-xs text-emerald-300">
+      <strong class="font-semibold">技術面驗證通過：</strong> 當前最新股價位於 60 日均線（季線）之上，顯示中長期多頭趨勢成立，具備買盤動能。
+    </div>
+  </div>
+
+</div>
+            applyFilters();
+        }
+
+        function filterTable() {
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+            
+            let filtered = stockData.filter(stock => {
+                const matchIndustry = (currentIndustry === '全部') || (stock.industry === currentIndustry);
+                const matchKeyword = stock.code.toLowerCase().includes(keyword) || stock.name.toLowerCase().includes(keyword);
+                return matchIndustry && matchKeyword;
+            });
+
+            renderTable(filtered);
+        }
+
+        function exportCSV() {
+            let csvContent = "\uFEFF產業類別,股票代號,股票名稱,最新收盤價,本益比,殖利率(%),核心業務\n";
+            stockData.forEach(row => {
+                csvContent += `"${row.industry}","${row.code}","${row.name}",${row.price},${row.pe},${row.yield},"${row.business}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `台股強勢篩選清單_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+        }
+
+        // 初始化渲染
+        renderTable(stockData);
+    </script>
+</body>
+</html>

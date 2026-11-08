@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>coco-123</title>
+    <title>評估儀表板</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -16,7 +16,7 @@
         <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
             <div>
                 <h1 class="text-2xl font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-chart-line text-emerald-400"></i> 台股強勢成長股與籌碼四象限儀表板
+                    <i class="fa-solid fa-chart-line text-emerald-400"></i> 評估儀表板
                 </h1>
                 <p class="text-slate-400 text-sm mt-1">月營收連三月成長 ｜ 股價站上季線(MA60) ｜ 日均量 > 500張 ｜ 估值合理性評估</p>
             </div>
@@ -193,7 +193,7 @@
 
     </main>
 
-    <!-- JavaScript 邏輯：適配 data.json 的物件與欄位結構 -->
+    <!-- JavaScript 邏輯 -->
     <script>
         let stockData = [];
         let currentIndustry = '全部';
@@ -204,15 +204,12 @@
                 if (!response.ok) throw new Error('無法取得 data.json 資料');
                 const rawData = await response.json();
                 
-                // 設定更新日期
                 if (rawData.meta && rawData.meta.data_date) {
                     document.getElementById('reportDate').innerText = `更新日期：${rawData.meta.data_date}`;
                 }
 
-                // 將 Python 產出的 JSON 格式轉換為網頁表格需要的欄位
                 if (rawData.stocks && Array.isArray(rawData.stocks)) {
                     stockData = rawData.stocks.map(item => {
-                        // 轉換象限名稱與樣式
                         let qText = "", qClass = "";
                         if (item.quadrant === 1) {
                             qText = "🚀 第一象限：加速流入";
@@ -228,7 +225,6 @@
                             qClass = "bg-rose-900/50 text-rose-300 border border-rose-700";
                         }
 
-                        // 估值評估判斷 (依本益比 PE)
                         let valuation = "合理區間", valClass = "bg-emerald-900/50 text-emerald-300 border border-emerald-700";
                         if (item.pe < 15) {
                             valuation = "相對便宜";
@@ -328,7 +324,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `台股強勢股與估值評估儀表板_${new Date().toISOString().slice(0,10)}.csv`;
+            a.download = `評估儀表板_${new Date().toISOString().slice(0,10)}.csv`;
             a.click();
         }
 

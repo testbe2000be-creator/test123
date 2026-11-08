@@ -131,12 +131,12 @@
             </div>
         </section>
 
-        <!-- SECTION 3: 完整的產業趨勢白話文解讀報告 -->
+        <!-- SECTION 3: 完整的產業趨勢白話文解讀報告 (含5大點與總結) -->
         <section class="bg-slate-800 rounded-2xl shadow-md border border-slate-700 overflow-hidden">
             <div class="p-6 bg-slate-900 text-white flex justify-between items-center cursor-pointer" onclick="toggleReport()">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-file-lines text-emerald-400"></i>
-                    <h2 class="text-base font-bold">產業趨勢白話文解讀報告 & 盤後備註</h2>
+                    <h2 class="text-base font-bold">產業趨勢白話文解讀與備註報告</h2>
                 </div>
                 <button class="text-slate-400 hover:text-white text-sm">
                     <i class="fa-solid fa-chevron-down" id="reportChevron"></i>
@@ -148,7 +148,7 @@
                         <i class="fa-solid fa-bullseye text-emerald-400"></i> 這波趨勢對台股哪個族群影響最大？
                     </h3>
                     <p class="text-slate-300 leading-relaxed">
-                        影響最大的是 <strong>「AI 伺服器供應鏈」</strong> 與 <strong>「先進半導體／高效能運算 (HPC)」</strong> 族群。簡單來說,就是幫全球科技巨頭打造 AI 晶片、組裝超級電腦、提供散熱與電源解方，且手上訂單滿到營收連續三個月年增正成長的公司。
+                        影響最大的是 <strong>「AI 伺服器供應鏈」</strong> 與 <strong>「先進半導體／高效能運算 (HPC)」</strong> 族群。簡單來說，就是幫全球科技巨頭（如微軟、Google、NVIDIA）打造 AI 晶片、組裝超級電腦、提供散熱與電源解方的公司，且手上訂單滿到每個月營收都在年增成長的公司。
                     </p>
                 </div>
 
@@ -158,9 +158,9 @@
                             <i class="fa-solid fa-building text-indigo-400"></i> 1. 主要廠商（誰是老大？）
                         </h4>
                         <ul class="list-disc pl-5 space-y-1 text-slate-300 text-xs">
-                            <li><strong>晶圓代工與 IC 設計：</strong>台積電 (2330)、聯發科 (2454)</li>
-                            <li><strong>AI 伺服器代工：</strong>廣達 (2382)、緯創 (3231)</li>
-                            <li><strong>關鍵零組件：</strong>台達電 (2308)、奇鋐 (3017)</li>
+                            <li><strong>晶圓代工與 IC 設計：</strong>台積電 (2330)、聯發科 (2454)、創意 (3443)</li>
+                            <li><strong>AI 伺服器代工：</strong>廣達 (2382)、緯創 (3231)、緯穎 (6669)</li>
+                            <li><strong>關鍵零組件（電源與散熱）：</strong>台達電 (2308)、奇鋐 (3017)</li>
                         </ul>
                     </div>
 
@@ -169,7 +169,8 @@
                             <i class="fa-solid fa-newspaper text-indigo-400"></i> 2. 近期新聞（最近發生了什麼事？）
                         </h4>
                         <p class="text-slate-300 text-xs leading-relaxed">
-                            全球各大科技巨頭持續採購 AI 伺服器，帶動台廠供應鏈營收亮眼。隨著基本面轉強，股價紛紛站回 60 日季線之上，扭轉中期格局。
+                            AI 需求沒有冷場：全球各大科技巨頭持續編列預算採購 AI 晶片與伺服器，帶動台灣供應鏈營收連續幾個月繳出「年增率正成長 (YOY > 0)」的好成績。<br>
+                            技術面轉強：隨著基本面好得不得了，資金重新回流，這些公司的股價紛紛站回「60日均線（季線）」之上，代表盤勢重新看好。
                         </p>
                     </div>
 
@@ -178,18 +179,30 @@
                             <i class="fa-solid fa-user-tie text-indigo-400"></i> 3. 法人看法（大戶怎麼看？）
                         </h4>
                         <p class="text-slate-300 text-xs leading-relaxed">
-                            法人認為市場更重視有實質營收支撐的成長股。營收連續三個月正成長證明需求扎實，搭配股價站上季線，顯示中長線買盤正在集結。
+                            基本面有底氣：法人認為光講題材不夠，看重「營收有沒有實際開出來」。這 3 個月營收年成長代表有實質訂單支撐。<br>
+                            技術面訊號：股價站上季線，通常代表中長期的跌勢或整理期已經扭轉，買盤正在聚攏。
                         </p>
                     </div>
 
                     <div class="bg-slate-700/50 p-5 rounded-xl border border-slate-600 space-y-3">
                         <h4 class="font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-flag-checkered text-indigo-400"></i> 4. 摘要結論
+                            <i class="fa-solid fa-flag-checkered text-indigo-400"></i> 4. 相關台股標的（符合條件的代表性公司）
                         </h4>
-                        <p class="text-slate-300 text-xs leading-relaxed">
-                            本清單結合了營收成長（基本面）、站上季線（技術面）、法人籌碼流向與估值評估，助您一秒看懂市場主流。
-                        </p>
+                        <ul class="list-disc pl-5 space-y-1 text-slate-300 text-xs">
+                            <li><strong>半導體：</strong>台積電 (2330)、聯發科 (2454)、創意 (3443)</li>
+                            <li><strong>伺服器代工：</strong>廣達 (2382)、奇鋐 (3017)、緯穎 (6669)</li>
+                            <li><strong>重電綠能：</strong>華城 (1519)、士電 (1503)</li>
+                        </ul>
                     </div>
+                </div>
+
+                <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700">
+                    <h4 class="font-bold text-emerald-400 mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-star text-emerald-400"></i> 5. 摘要結論（白話總結）
+                    </h4>
+                    <p class="text-slate-300 text-xs leading-relaxed">
+                        這份名單篩選出來的股票，結合了「營收在穩健成長（基本面）」加上「股價強勢站上均線（技術面）」與「三大法人籌碼持續流入」的三重優勢，代表它們不是單純炒作的飆股，而是有真實業績需求支撐的強勢主流股。再加上新增的「估值評估」欄位，能幫您在進場前把關價格是否合理！
+                    </p>
                 </div>
             </div>
         </section>

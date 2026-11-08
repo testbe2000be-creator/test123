@@ -214,7 +214,8 @@
         // 非同步讀取 data.json
         async function fetchStockData() {
             try {
-                const response = await fetch('data.json');
+                onst fetchPath = window.location.hostname.includes('github.io') ? './data.json' : 'data.json';
+const response = await fetch(fetchPath);
                 if (!response.ok) throw new Error('無法取得 data.json 資料');
                 stockData = await response.json();
                 renderTable(stockData);

@@ -22,7 +22,7 @@
                 </h1>
                 <p class="text-slate-400 text-sm mt-1">股價 $15~$35 ｜ PE &lt; 12 ｜ PB &lt; 1.2 ｜ 殖利率 &gt; 5% ｜ 近3月營收YoY正成長</p>
             </div>
-            <div class="mt-4 md:mt-0 flex gap-3">
+            <div class="mt-4 md:mt-0">
                 <button onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 shadow-sm">
                     <i class="fa-solid fa-download"></i> 匯出篩選 CSV
                 </button>
@@ -35,19 +35,15 @@
         
         <!-- SECTION 1: 三大法人籌碼資金流向四象限圖表 -->
         <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-compass text-indigo-600"></i> 三大法人資金流向四象限圖表
-                    </h2>
-                    <p class="text-xs text-slate-500 mt-0.5">橫軸：買超動能變化（向右表增強） ｜ 縱軸：法人淨買超金額（向上表買超擴大）</p>
-                </div>
-                <div class="flex items-center gap-3 bg-slate-100 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600">
-                    <span>🔥 主流灌入板塊：<strong class="text-emerald-600">金融保險、傳產價值股</strong></span>
-                </div>
+            <div class="mb-4">
+                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-compass text-indigo-600"></i> 三大法人資金流向四象限圖表
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">橫軸：買超動能變化（向右表增強） ｜ 縱軸：法人淨買超金額（向上表買超擴大）</p>
             </div>
 
-            <div class="relative w-full h-[350px] md:h-[420px]">
+            <!-- 固定高度畫布容器避免空白 -->
+            <div style="width: 100%; height: 380px; position: relative;">
                 <canvas id="quadrantChart"></canvas>
             </div>
 
@@ -84,14 +80,12 @@
                 <!-- 搜尋與產業分類 -->
                 <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
                     <div class="relative">
-                        <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-xs"></i>
-                        <input type="text" id="searchInput" placeholder="搜尋代號或名稱..." onkeyup="filterTable()" class="pl-9 pr-4 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs w-full md:w-48">
+                        <input type="text" id="searchInput" placeholder="搜尋代號或名稱..." onkeyup="filterTable()" class="pl-3 pr-4 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs w-full md:w-48">
                     </div>
                     <div class="flex gap-1.5 overflow-x-auto pb-1 md:pb-0" id="industryFilters">
                         <button onclick="filterIndustry('全部')" class="industry-btn px-3 py-1 rounded-full text-xs font-semibold bg-emerald-600 text-white transition">全部</button>
                         <button onclick="filterIndustry('金融保險')" class="industry-btn px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">金融保險</button>
                         <button onclick="filterIndustry('水泥/塑膠')" class="industry-btn px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">水泥/塑膠</button>
-                        <button onclick="filterIndustry('傳產/其他')" class="industry-btn px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">傳產/其他</button>
                     </div>
                 </div>
             </div>
@@ -121,34 +115,10 @@
             </div>
         </section>
 
-        <!-- SECTION 3: 價值投資策略白話文備註 -->
-        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="p-6 bg-slate-900 text-white flex justify-between items-center cursor-pointer" onclick="toggleReport()">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-file-lines text-emerald-400"></i>
-                    <h2 class="text-base font-bold">價值成長選股邏輯與實務備註</h2>
-                </div>
-                <button class="text-slate-400 hover:text-white text-sm">
-                    <i class="fa-solid fa-chevron-down" id="reportChevron"></i>
-                </button>
-            </div>
-            <div id="reportContent" class="p-6 space-y-6 text-sm text-slate-700 bg-slate-50/50">
-                <div class="bg-emerald-50/60 border border-emerald-100 p-4 rounded-xl">
-                    <h3 class="font-bold text-emerald-900 mb-1 flex items-center gap-2">
-                        <i class="fa-solid fa-shield-halved text-emerald-600"></i> 為什麼設定這些篩選條件？
-                    </h3>
-                    <p class="text-slate-600 leading-relaxed">
-                        本策略專為尋找 <strong>「低基期、高防禦性、有現金流支撐」</strong> 的台股設計。股價鎖定在 15 至 35 元親民價位，搭配本益比小於 12 倍與股價淨值比小於 1.2 倍，確保買進時有足夠的安全邊際；加上現金殖利率大於 5% 且營收連續三個月年增正成長，兼顧了收益與成長性。
-                    </p>
-                </div>
-            </div>
-        </section>
-
     </main>
 
-    <!-- JavaScript 篩選與渲染邏輯 -->
+    <!-- JavaScript 邏輯 -->
     <script>
-        // 嚴格符合條件的示範標的資料庫
         const stockData = [
             { industry: "金融保險", code: "2889", name: "國票金", price: 16.5, pe: 10.5, pb: 1.05, yield: 5.5, business: "票券金融與綜合證券業務" },
             { industry: "水泥/塑膠", code: "1101", name: "台泥", price: 23.5, pe: 11.2, pb: 0.85, yield: 5.8, business: "水泥製造、綠能與資源循環事業" },
@@ -226,53 +196,32 @@
             a.click();
         }
 
-        function toggleReport() {
-            const content = document.getElementById('reportContent');
-            const chevron = document.getElementById('reportChevron');
-            content.classList.toggle('hidden');
-            chevron.classList.toggle('rotate-180');
-        }
-
         // 初始化圖表與表格
         window.addEventListener('DOMContentLoaded', () => {
             renderTable(stockData);
 
             const ctx = document.getElementById('quadrantChart').getContext('2d');
-            const quadrantData = {
-                datasets: [
-                    {
-                        label: '🚀 加速流入 (防禦主流)',
-                        data: [
-                            { x: 75, y: 85, name: '金融保險 (國票金/元大金)' },
-                            { x: 65, y: 70, name: '水泥基礎建設 (台泥)' }
-                        ],
-                        backgroundColor: '#059669',
-                        pointRadius: 8
-                    },
-                    {
-                        label: '⚖️ 流入放緩',
-                        data: [{ x: 15, y: 30, name: '傳統塑化 (台塑)' }],
-                        backgroundColor: '#d97706',
-                        pointRadius: 7
-                    },
-                    {
-                        label: '🔍 流出放緩',
-                        data: [{ x: -20, y: -15, name: '低檔傳產股' }],
-                        backgroundColor: '#64748b',
-                        pointRadius: 6
-                    },
-                    {
-                        label: '⚠️ 加速流出',
-                        data: [{ x: -65, y: -80, name: '弱勢景氣循環股' }],
-                        backgroundColor: '#e11d48',
-                        pointRadius: 6
-                    }
-                ]
-            };
-
             new Chart(ctx, {
                 type: 'scatter',
-                data: quadrantData,
+                data: {
+                    datasets: [
+                        {
+                            label: '🚀 加速流入 (防禦主流)',
+                            data: [
+                                { x: 75, y: 85, name: '金融保險 (國票金/元大金)' },
+                                { x: 65, y: 70, name: '水泥基礎建設 (台泥)' }
+                            ],
+                            backgroundColor: '#059669',
+                            pointRadius: 8
+                        },
+                        {
+                            label: '⚖️ 流入放緩',
+                            data: [{ x: 15, y: 30, name: '傳統塑化 (台塑)' }],
+                            backgroundColor: '#d97706',
+                            pointRadius: 7
+                        }
+                    ]
+                },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -289,14 +238,12 @@
                     },
                     scales: {
                         x: {
-                            title: { display: true, text: '買超動能變化 (動能加速 ➔)' },
-                            min: -100, max: 100,
-                            grid: { color: ctx => ctx.tick.value === 0 ? '#64748b' : '#e2e8f0', lineWidth: ctx => ctx.tick.value === 0 ? 2 : 1 }
+                            title: { display: true, text: '買超動能變化 ➔' },
+                            min: -100, max: 100
                         },
                         y: {
                             title: { display: true, text: '法人淨買超金額 (億元)' },
-                            min: -100, max: 120,
-                            grid: { color: ctx => ctx.tick.value === 0 ? '#64748b' : '#e2e8f0', lineWidth: ctx => ctx.tick.value === 0 ? 2 : 1 }
+                            min: -100, max: 120
                         }
                     }
                 }

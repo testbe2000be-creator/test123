@@ -135,6 +135,69 @@
             </div>
         </section>
 
+        <!-- SECTION 3: 產業趨勢白話文報告備註 (可收合) -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 bg-slate-900 text-white flex justify-between items-center cursor-pointer" onclick="toggleReport()">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-lines text-emerald-400"></i>
+                    <h2 class="text-base font-bold">產業趨勢白話文解讀與備註報告</h2>
+                </div>
+                <button class="text-slate-400 hover:text-white text-sm">
+                    <i class="fa-solid fa-chevron-down" id="reportChevron"></i>
+                </button>
+            </div>
+            <div id="reportContent" class="p-6 space-y-6 text-sm text-slate-700 bg-slate-50/50">
+                <div class="bg-emerald-50/60 border border-emerald-100 p-4 rounded-xl">
+                    <h3 class="font-bold text-emerald-900 mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye text-emerald-600"></i> 影響族群總覽
+                    </h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        本波篩選對台股影響最大的是 <strong>「AI 伺服器供應鏈」</strong> 與 <strong>「先進半導體／高效能運算（HPC）」</strong> 族群。簡單來說，就是幫全球科技巨頭打造 AI 晶片、組裝超級電腦、提供散熱與電源解方，且手上訂單滿到營收連續三個月年增正成長的實質獲利公司。
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                        <h4 class="font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-building text-indigo-600"></i> 1. 主要廠商（產業領頭羊）
+                        </h4>
+                        <ul class="list-disc pl-5 space-y-1 text-slate-600 text-xs">
+                            <li><strong>晶圓代工與IC設計：</strong>台積電 (2330)、聯發科 (2454)</li>
+                            <li><strong>AI伺服器與代工：</strong>廣達 (2382)、緯創 (3231)</li>
+                            <li><strong>關鍵零組件與散熱：</strong>台達電 (2308)、奇鋐 (3017)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                        <h4 class="font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-newspaper text-indigo-600"></i> 2. 近期新聞與市場動態
+                        </h4>
+                        <p class="text-slate-600 text-xs leading-relaxed">
+                            全球各大雲端服務商（CSP）持續擴大資本支出採購 AI 伺服器，帶動台廠供應鏈營收繳出亮眼年增率。隨著基本面轉強，資金重新回流並推升股價站回 60 日季線之上，扭轉中期整理格局。
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                        <h4 class="font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-user-tie text-indigo-600"></i> 3. 法人看法與籌碼動向
+                        </h4>
+                        <p class="text-slate-600 text-xs leading-relaxed">
+                            法人機構指出，市場目前更重視「有實質營收支撐」的成長股。營收連續三個月正成長證明需求扎實，搭配股價站上季線，顯示中長線買盤正在集結，非短期題材炒作。
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                        <h4 class="font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-flag-checkered text-indigo-600"></i> 4. 摘要結論
+                        </h4>
+                        <p class="text-slate-600 text-xs leading-relaxed">
+                            本清單同時結合了基本面（營收成長）、技術面（站上季線）、法人籌碼流向以及估值合理性評估，幫助您免去手動翻閱財報的繁瑣步驟，一秒看懂市場主流。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- JavaScript 邏輯 -->
@@ -214,6 +277,13 @@
             a.href = url;
             a.download = `台股強勢與估值評估清單_${new Date().toISOString().slice(0,10)}.csv`;
             a.click();
+        }
+
+        function toggleReport() {
+            const content = document.getElementById('reportContent');
+            const chevron = document.getElementById('reportChevron');
+            content.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
         }
 
         window.addEventListener('DOMContentLoaded', () => {

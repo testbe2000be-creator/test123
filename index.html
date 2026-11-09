@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台股強勢股評估儀表板｜營收・季線・籌碼・估值</title>
+    <meta name="description" content="結合月營收連三月成長、股價站上季線、日均量與法人籌碼流向的台股強勢股篩選與估值評估儀表板。僅供參考，非投資建議。">
+    <meta name="theme-color" content="#0f172a">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="台股強勢股評估儀表板">
+    <meta property="og:description" content="月營收、季線、日均量、法人籌碼與估值一次整理。">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📈%3C/text%3E%3C/svg%3E">
+
+    <!-- Tailwind Play CDN：方便開發；若要正式上線，建議改用 Tailwind CLI 建置成靜態 CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-12">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold">📈 台股強勢股評估儀表板</h1>
+                <p class="text-slate-400 text-xs sm:text-sm mt-1">月營收連三月成長 ｜ 股價站上季線 (MA60) ｜ 日均量 &gt; 500 張 ｜ 估值合理性評估</p>
+            </div>
+            <div class="w-full sm:w-auto flex justify-end">
+                <button type="button" id="exportBtn" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-300 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 shadow-sm">
+                    <span aria-hidden="true">⬇️</span> 匯出目前清單 (CSV)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-8 space-y-6 sm:space-y-8">
+
+        <!-- 資料過期警示 -->
+        <div id="staleWarning" class="hidden bg-amber-950/50 border border-amber-700 text-amber-200 text-sm rounded-xl p-3 sm:p-4" role="alert"></div>
+
+        <!-- SECTION 1：三大法人資金流向四象限 -->
+        <section class="bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-md border border-slate-700" aria-labelledby="quadrantTitle">
+            <div class="mb-4 sm:mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                <div>
+                    <h2 id="quadrantTitle" class="text-base sm:text-lg font-bold text-white">🧭 三大法人資金流向四象限解析</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">依資料日期整理 ｜ 配色採台股慣例：紅 = 流入／上漲，綠 = 流出／下跌</p>
+                </div>
+                <div id="hotSectorsWrap" class="hidden items-center gap-2 bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300">
+                    <span>🔥 資料標示的主流板塊：<strong id="hotSectors" class="text-rose-300"></strong></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                <div class="bg-rose-950/40 border border-rose-800/60 p-4 sm:p-5 rounded-xl">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <h3 class="font-bold text-rose-300 text-sm sm:text-base">🚀 第一象限：加速流入</h3>
+                        <span class="bg-rose-600 text-white text-xs px-2.5 py-0.5 rounded-full font-medium whitespace-nowrap">買盤最強</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed mb-3">法人買超速度越買越快，資金持續灌入。</p>
+                    <div class="text-xs text-rose-300 font-medium bg-rose-900/50 p-2 rounded-lg">代表：強勢主流股</div>
+                </div>
+
+                <div class="bg-amber-950/40 border border-amber-800/60 p-4 sm:p-5 rounded-xl">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <h3 class="font-bold text-amber-300 text-sm sm:text-base">⚖️ 第二象限：流入放緩</h3>
+                        <span class="bg-amber-600 text-white text-xs px-2.5 py-0.5 rounded-full font-medium whitespace-nowrap">高檔震盪</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed mb-3">仍有資金進駐，但買盤力道縮減，短線高檔整理。</p>
+                    <div class="text-xs text-amber-300 font-medium bg-amber-900/50 p-2 rounded-lg">代表：高檔整理族群</div>
+                </div>
+
+                <div class="bg-slate-700/40 border border-slate-600 p-4 sm:p-5 rounded-xl">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <h3 class="font-bold text-slate-200 text-sm sm:text-base">🔍 第三象限：流出放緩</h3>
+                        <span class="bg-slate-600 text-white text-xs px-2.5 py-0.5 rounded-full font-medium whitespace-nowrap">籌碼沉澱</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed mb-3">賣超力道減緩，賣壓最重的階段可能已過，可持續觀察。</p>
+                    <div class="text-xs text-slate-300 font-medium bg-slate-700 p-2 rounded-lg">代表：打底沉澱族群</div>
+                </div>
+
+                <div class="bg-emerald-950/40 border border-emerald-800/60 p-4 sm:p-5 rounded-xl">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <h3 class="font-bold text-emerald-300 text-sm sm:text-base">⚠️ 第四象限：加速流出</h3>
+                        <span class="bg-emerald-700 text-white text-xs px-2.5 py-0.5 rounded-full font-medium whitespace-nowrap">賣壓偏重</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed mb-3">法人賣超擴大，資金快速撤離，需留意風險。</p>
+                    <div class="text-xs text-emerald-300 font-medium bg-emerald-900/50 p-2 rounded-lg">代表：資金退潮族群</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2：個股清單 -->
+        <section class="bg-slate-800 rounded-2xl shadow-md border border-slate-700 overflow-hidden" aria-labelledby="listTitle">
+            <div class="p-4 sm:p-6 border-b border-slate-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                <h2 id="listTitle" class="text-base sm:text-lg font-bold text-white">🔎 符合條件的強勢個股與估值評估</h2>
+                <div class="flex gap-1.5 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none" id="industryFilters" role="group" aria-label="產業篩選"></div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[800px]" id="stockTable">
+                    <caption class="sr-only">符合條件的強勢個股清單，含價格、籌碼流向、本益比、殖利率與成交量</caption>
+                    <thead>
+                        <tr class="bg-slate-900 text-slate-400 text-xs font-semibold tracking-wider border-b border-slate-700">
+                            <th scope="col" class="py-3 px-4">股票代號 / 名稱</th>
+                            <th scope="col" class="py-3 px-4 text-right">最新價 (元)</th>
+                            <th scope="col" class="py-3 px-4">籌碼流向象限</th>
+                            <th scope="col" class="py-3 px-4 text-right">近 5 日法人買賣超</th>
+                            <th scope="col" class="py-3 px-4 text-right">本益比 (PE)</th>
+                            <th scope="col" class="py-3 px-4 text-right">殖利率 (%)</th>
+                            <th scope="col" class="py-3 px-4 text-center">估值評估</th>
+                            <th scope="col" class="py-3 px-4 text-right">近 3 月 YOY 均值</th>
+                            <th scope="col" class="py-3 px-4 text-right">日均成交量</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-700 text-sm" id="tableBody" aria-live="polite">
+                        <tr><td colspan="9" class="py-8 text-center text-slate-400">正在載入最新數據…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-4 bg-slate-900 border-t border-slate-700 text-xs text-slate-400 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <span id="rowCount">顯示 0 筆符合條件的個股</span>
+                <span>💡 手機可左右滑動表格 ｜ 估值僅依本益比粗分：&lt;15 偏低、15–25 合理、25–30 偏高、&gt;30 過熱；虧損或無資料不評估，且未考慮產業差異。</span>
+            </div>
+        </section>
+
+        <!-- SECTION 3：靜態說明 -->
+        <section class="bg-slate-800 rounded-2xl shadow-md border border-slate-700 overflow-hidden">
+            <h2>
+                <button type="button" id="reportToggle" class="w-full p-4 sm:p-6 bg-slate-900 text-white flex justify-between items-center text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-300" aria-expanded="true" aria-controls="reportContent">
+                    <span class="flex items-center gap-2 flex-wrap">
+                        <span aria-hidden="true">📄</span>
+                        <span class="text-sm sm:text-base font-bold">篩選邏輯與產業背景說明</span>
+                        <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">靜態說明，非每日更新</span>
+                        <span id="reportDate" class="text-xs bg-slate-800 text-indigo-300 px-2 py-0.5 rounded border border-slate-700">資料日期：載入中…</span>
+                    </span>
+                    <span id="reportChevron" class="text-slate-400 transition-transform rotate-180" aria-hidden="true">▼</span>
+                </button>
+            </h2>
+            <div id="reportContent" class="p-4 sm:p-6 space-y-4 sm:space-y-6 text-xs sm:text-sm text-slate-300 bg-slate-800/50">
+                <div class="bg-indigo-950/40 border border-indigo-800/60 p-3 sm:p-4 rounded-xl">
+                    <h3 class="font-bold text-indigo-300 mb-1">這份清單主要涵蓋哪些族群？</h3>
+                    <p class="leading-relaxed">
+                        篩選條件偏向營收持續成長的公司，過去常見於 AI 伺服器供應鏈與先進半導體／高效能運算 (HPC) 相關族群。實際入選名單與產業分布，一律以上方表格（<code class="text-slate-200">data.json</code>）為準。
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="bg-slate-700/50 p-4 sm:p-5 rounded-xl border border-slate-600 space-y-2">
+                        <h3 class="font-bold text-white">1. 族群代表公司（僅為舉例，非推薦）</h3>
+                        <ul class="list-disc pl-5 space-y-1 text-slate-300 text-xs">
+                            <li><strong>晶圓代工與 IC 設計：</strong>台積電 (2330)、聯發科 (2454)</li>
+                            <li><strong>AI 伺服器代工：</strong>廣達 (2382)、緯創 (3231)</li>
+                            <li><strong>關鍵零組件：</strong>台達電 (2308)、奇鋐 (3017)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-700/50 p-4 sm:p-5 rounded-xl border border-slate-600 space-y-2">
+                        <h3 class="font-bold text-white">2. 為什麼看「營收連三月成長」</h3>
+                        <p class="text-xs leading-relaxed">
+                            月營收是公開、更新頻率高的基本面指標。連續多月年增率為正，代表需求至少在短期內沒有轉弱，但無法保證獲利或股價表現。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-700/50 p-4 sm:p-5 rounded-xl border border-slate-600 space-y-2">
+                        <h3 class="font-bold text-white">3. 為什麼看「站上季線」與法人籌碼</h3>
+                        <p class="text-xs leading-relaxed">
+                            季線 (MA60) 常被當作中期趨勢的參考；法人買賣超則反映大額資金的短期動向。兩者都是落後或短期指標，建議與基本面、風險承受度一併評估。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-700/50 p-4 sm:p-5 rounded-xl border border-slate-600 space-y-2">
+                        <h3 class="font-bold text-white">4. 使用方式</h3>
+                        <p class="text-xs leading-relaxed">
+                            本清單用來縮小研究範圍，而不是買賣訊號。入選不代表值得買進，未入選也不代表不好。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 免責聲明 -->
+        <footer class="text-xs text-slate-400 leading-relaxed bg-slate-800/60 border border-slate-700 rounded-xl p-4">
+            <p class="font-semibold text-slate-300 mb-1">免責聲明</p>
+            <p>
+                本頁內容僅為公開資料的整理與統計分類，不構成任何投資建議或買賣邀約。資料可能有延遲、錯漏或更新失敗，投資決策請自行判斷並承擔風險，必要時請諮詢合格專業人士。
+            </p>
+            <p class="mt-1">資料來源：<span id="dataSource">公開市場資料（詳見儲存庫中的 update_data.py）</span></p>
+        </footer>
+    </main>
+
+    <script>
+        'use strict';
+
+        // ---------- 工具函式 ----------
+        const $ = id => document.getElementById(id);
+        const COLS = 9;
+
+        // 防止資料中的特殊字元被當成 HTML 執行
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => (
+            { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+        ));
+
+        // 轉成有限數字，否則回傳 null（避免 undefined / NaN 外洩到畫面）
+        const toNum = v => {
+            if (v === null || v === undefined || v === '') return null;
+            const n = Number(v);
+            return Number.isFinite(n) ? n : null;
+        };
+        const fmt = (n, d = 1) => n === null ? '-' :
+            n.toLocaleString('zh-TW', { minimumFractionDigits: d, maximumFractionDigits: d });
+        const signed = (n, d = 1) => n === null ? '-' : (n > 0 ? '+' : '') + fmt(n, d);
+
+        // 台股慣例：紅 = 正向，綠 = 負向
+        const dirClass = n => n === null ? 'text-slate-400'
+            : n > 0 ? 'text-rose-400' : n < 0 ? 'text-emerald-400' : 'text-slate-300';
+
+        const QUADRANTS = {
+            1: { label: '第一象限：加速流入', text: '🚀 第一象限：加速流入', cls: 'bg-rose-900/50 text-rose-300 border border-rose-700' },
+            2: { label: '第二象限：流入放緩', text: '⚖️ 第二象限：流入放緩', cls: 'bg-amber-900/50 text-amber-300 border border-amber-700' },
+            3: { label: '第三象限：流出放緩', text: '🔍 第三象限：流出放緩', cls: 'bg-slate-700 text-slate-300 border border-slate-600' },
+            4: { label: '第四象限：加速流出', text: '⚠️ 第四象限：加速流出', cls: 'bg-emerald-900/50 text-emerald-300 border border-emerald-700' }
+        };
+        const QUADRANT_UNKNOWN = { label: '未分類', text: '❔ 未分類', cls: 'bg-slate-700 text-slate-400 border border-slate-600' };
+
+        function valuate(pe) {
+            if (pe === null || pe <= 0) return { text: '無法評估', cls: 'bg-slate-700 text-slate-300 border border-slate-600' };
+            if (pe < 15) return { text: '相對便宜', cls: 'bg-blue-900/50 text-blue-300 border border-blue-700' };
+            if (pe > 30) return { text: '注意過熱', cls: 'bg-orange-900/50 text-orange-300 border border-orange-700' };
+            if (pe > 25) return { text: '本益比偏高', cls: 'bg-amber-900/50 text-amber-300 border border-amber-700' };
+            return { text: '合理區間', cls: 'bg-sky-900/50 text-sky-300 border border-sky-700' };
+        }
+
+        // 把 data.json 單筆資料整理成統一格式，缺值一律變 null
+        function normalize(item) {
+            const q = QUADRANTS[toNum(item.quadrant)] || QUADRANT_UNKNOWN;
+            const pe = toNum(item.pe);
+            const val = valuate(pe);
+            return {
+                industry: String(item.industry || '其他'),
+                code: String(item.code ?? ''),
+                name: String(item.name ?? ''),
+                price: toNum(item.close),
+                quadrant: q,
+                buy5: toNum(item.buy5),
+                pe,
+                yield: toNum(item.yield),
+                valuation: val,
+                yoy: toNum(item.yoy_avg),
+                vol: toNum(item.avg_vol)
+            };
+        }
+
+        // ---------- 狀態 ----------
+        let stockData = [];
+        let currentIndustry = '全部';
+        let dataDate = '';
+
+        const getFiltered = () => currentIndustry === '全部'
+            ? stockData
+            : stockData.filter(s => s.industry === currentIndustry);
+
+        // ---------- 載入資料 ----------
+        async function fetchStockData() {
+            const tbody = $('tableBody');
+            let rawData;
+            try {
+                const response = await fetch('data.json', { cache: 'no-cache' });
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                rawData = await response.json();
+            } catch (error) {
+                console.error('載入失敗:', error);
+                tbody.innerHTML = `<tr><td colspan="${COLS}" class="py-8 text-center text-rose-300">無法載入 data.json（${esc(error.message)}）。請稍後重新整理，或確認自動更新流程是否正常。</td></tr>`;
+                return;
+            }
+
+            const meta = rawData.meta || {};
+            if (meta.data_date) {
+                dataDate = String(meta.data_date);
+                $('reportDate').textContent = `資料日期：${dataDate}`;
+                checkStale(dataDate);
+            } else {
+                $('reportDate').textContent = '資料日期：未提供';
+            }
+            if (meta.source) $('dataSource').textContent = String(meta.source);
+            if (meta.hot_sectors) {
+                const text = Array.isArray(meta.hot_sectors) ? meta.hot_sectors.join('、') : String(meta.hot_sectors);
+                $('hotSectors').textContent = text;
+                $('hotSectorsWrap').classList.remove('hidden');
+                $('hotSectorsWrap').classList.add('flex');
+            }
+
+            if (!Array.isArray(rawData.stocks)) {
+                tbody.innerHTML = `<tr><td colspan="${COLS}" class="py-8 text-center text-rose-300">data.json 缺少 stocks 陣列，請檢查資料格式。</td></tr>`;
+                return;
+            }
+
+            // 單筆資料出問題時略過該筆，不讓整張表壞掉
+            stockData = rawData.stocks.reduce((list, item) => {
+                try { list.push(normalize(item)); }
+                catch (e) { console.warn('略過格式錯誤的資料列:', item, e); }
+                return list;
+            }, []);
+
+            buildFilters();
+            renderTable(getFiltered());
+        }
+
+        // 資料超過 5 天沒更新就提醒
+        function checkStale(dateStr) {
+            const d = new Date(dateStr.replace(/\//g, '-'));
+            if (isNaN(d.getTime())) return;
+            const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+            if (days > 5) {
+                const box = $('staleWarning');
+                box.textContent = `⚠️ 資料日期為 ${dateStr}，已超過 ${days} 天未更新，內容可能已過時。`;
+                box.classList.remove('hidden');
+            }
+        }
+
+        // ---------- 篩選 ----------
+        // 產業按鈕依實際資料動態產生，避免名稱對不上
+        function buildFilters() {
+            const box = $('industryFilters');
+            box.innerHTML = '';
+            const industries = ['全部', ...new Set(stockData.map(s => s.industry))];
+            industries.forEach(name => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = name;
+                btn.dataset.industry = name;
+                btn.addEventListener('click', () => filterIndustry(name));
+                box.appendChild(btn);
+            });
+            updateFilterStyles();
+        }
+
+        function updateFilterStyles() {
+            document.querySelectorAll('#industryFilters button').forEach(btn => {
+                const active = btn.dataset.industry === currentIndustry;
+                btn.setAttribute('aria-pressed', String(active));
+                btn.className = 'px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-300 ' +
+                    (active ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600');
+            });
+        }
+
+        function filterIndustry(industry) {
+            currentIndustry = industry;
+            updateFilterStyles();
+            renderTable(getFiltered());
+        }
+
+        // ---------- 表格 ----------
+        function renderTable(data) {
+            const tbody = $('tableBody');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${COLS}" class="py-8 text-center text-slate-400">沒有找到符合條件的股票</td></tr>`;
+                $('rowCount').textContent = '顯示 0 筆符合條件的個股';
+                return;
+            }
+
+            const rows = data.map(s => `
+                <tr class="hover:bg-slate-700/50 transition">
+                    <td class="py-3 px-4">
+                        <div class="font-mono font-semibold text-white">${esc(s.code)} <span class="text-slate-400 text-xs font-normal">(${esc(s.industry)})</span></div>
+                        <div class="font-bold text-slate-200">${esc(s.name)}</div>
+                    </td>
+                    <td class="py-3 px-4 text-right font-mono text-white">${fmt(s.price, 2)}</td>
+                    <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${s.quadrant.cls}">${s.quadrant.text}</span></td>
+                    <td class="py-3 px-4 text-right font-mono font-semibold ${dirClass(s.buy5)}">${s.buy5 === null ? '-' : signed(s.buy5, 1) + ' 億'}</td>
+                    <td class="py-3 px-4 text-right font-mono text-slate-300">${fmt(s.pe, 1)}</td>
+                    <td class="py-3 px-4 text-right font-mono text-slate-300">${s.yield === null ? '-' : fmt(s.yield, 2) + '%'}</td>
+                    <td class="py-3 px-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${s.valuation.cls}">${s.valuation.text}</span></td>
+                    <td class="py-3 px-4 text-right font-mono font-semibold ${dirClass(s.yoy)}">${s.yoy === null ? '-' : signed(s.yoy, 1) + '%'}</td>
+                    <td class="py-3 px-4 text-right font-mono text-slate-300">${s.vol === null ? '-' : fmt(s.vol, 0) + ' 張'}</td>
+                </tr>`).join('');
+
+            tbody.innerHTML = rows;
+            const scope = currentIndustry === '全部' ? '' : `（${esc(currentIndustry)}）`;
+            $('rowCount').innerHTML = `顯示 ${data.length} 筆符合條件的個股${scope}`;
+        }
+
+        // ---------- 匯出 CSV ----------
+        function csvCell(v) {
+            if (v === null || v === undefined) return '';
+            if (typeof v === 'number') return String(v);      // 數字不加引號，Excel 可直接計算
+            let s = String(v);
+            if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;           // 防止試算表公式注入
+            return '"' + s.replace(/"/g, '""') + '"';          // 雙引號跳脫
+        }
+
+        function exportCSV() {
+            const data = getFiltered();
+            if (data.length === 0) { alert('目前沒有可匯出的資料。'); return; }
+
+            const header = ['產業類別', '股票代號', '股票名稱', '收盤價(元)', '籌碼流向象限', '近5日法人買賣超(億)',
+                '本益比', '殖利率(%)', '估值評估', '近3月YOY均值(%)', '日均成交量(張)'];
+            const lines = [header.join(',')];
+            data.forEach(s => {
+                lines.push([
+                    s.industry, s.code, s.name, s.price, s.quadrant.label, s.buy5,
+                    s.pe, s.yield, s.valuation.text, s.yoy, s.vol
+                ].map(csvCell).join(','));
+            });
+
+            const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const stamp = (dataDate || new Date().toISOString().slice(0, 10)).replace(/[\/\s:]/g, '-');
+            a.href = url;
+            a.download = `強勢股評估_${currentIndustry}_${stamp}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        // ---------- 說明區收合 ----------
+        function toggleReport() {
+            const content = $('reportContent');
+            const btn = $('reportToggle');
+            const hidden = content.classList.toggle('hidden');
+            btn.setAttribute('aria-expanded', String(!hidden));
+            $('reportChevron').classList.toggle('rotate-180', !hidden);
+        }
+
+        // ---------- 啟動 ----------
+        window.addEventListener('DOMContentLoaded', () => {
+            $('exportBtn').addEventListener('click', exportCSV);
+            $('reportToggle').addEventListener('click', toggleReport);
+            fetchStockData();
+        });
+    </script>
+</body>
+</html>
